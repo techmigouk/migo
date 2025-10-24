@@ -1,0 +1,24 @@
+{
+  "name": "@amigo/tests",
+  "version": "1.0.0",
+  "description": "AI-powered testing suite for TechMigo platform",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:ai": "node aiTester.js",
+    "test:registration": "playwright test registration.spec.js",
+    "report": "playwright show-report",
+    "install-browsers": "playwright install"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.40.1",
+    "openai": "^4.20.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0"
+  }
+}

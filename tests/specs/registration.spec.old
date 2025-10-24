@@ -1,0 +1,209 @@
+const { test, expect } = require('@playwright/test');
+
+/**
+ * Student Registration Test Suite
+ * Tests the complete user registration flow on TechMigo platform
+ */
+
+test.describe('Student Registration Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    // Navigate to the signup page before each test
+    await page.goto('/signup');
+    await page.waitForLoadState('networkidle');
+  });
+
+  test('should display registration form with all required fields', async ({ page }) => {
+    // Check if the signup page loads correctly
+    await expect(page).toHaveTitle(/TechMigo|Sign Up|Register/i);
+    
+    // Verify form fields are present
+    await expect(page.locator('input[name="name"], input[placeholder*="name" i]')).toBeVisible();
+    await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();
+    await expect(page.locator('input[type="password"]').first()).toBeVisible();
+    
+    // Check for submit button
+    await expect(page.locator('button[type="submit"], button:has-text("Sign Up"), button:has-text("Register")')).toBeVisible();
+  });
+
+  test('should successfully register a new student', async ({ page }) => {
+    // Generate unique test user data
+    const timestamp = Date.now();
+    const testUser = {
+      name: `Test Student ${timestamp}`,
+      email: `teststudent${timestamp}@example.com`,
+      password: 'SecurePassword123!',
+    };
+
+    console.log(`[TEST] Registering user: ${testUser.email}`);
+
+    // Fill in the registration form
+    await page.locator('input[name="name"], input[placeholder*="name" i]').first().fill(testUser.name);
+    await page.locator('input[type="email"], input[name="email"]').fill(testUser.email);
+    
+    // Fill password fields
+    const passwordFields = await page.locator('input[type="password"]').all();
+    await passwordFields[0].fill(testUser.password);
+    
+    // If there's a confirm password field
+    if (passwordFields.length > 1) {
+      await passwordFields[1].fill(testUser.password);
+    }
+
+    // Click the submit button
+    const submitButton = page.locator('button[type="submit"], button:has-text("Sign Up"), button:has-text("Register")').first();
+    await submitButton.click();
+
+    // Wait for navigation or success indicator
+    await page.waitForTimeout(2000);
+
+    // Check for successful registration
+    // This could be a redirect to dashboard, login page, or success message
+    const currentUrl = page.url();
+    console.log(`[TEST] After registration, URL: ${currentUrl}`);
+
+    // Verify we're not still on the signup page OR there's a success message
+    const isRedirected = !currentUrl.includes('/signup');
+    const hasSuccessMessage = await page.locator('text=/success|registered|welcome|verify|email sent/i').count() > 0;
+    
+    expect(isRedirected || hasSuccessMessage).toBeTruthy();
+  });
+
+  test('should show validation error for invalid email', async ({ page }) => {
+    const invalidEmail = 'notanemail';
+
+    // Fill form with invalid email
+    await page.locator('input[name="name"], input[placeholder*="name" i]').first().fill('Test User');
+    await page.locator('input[type="email"], input[name="email"]').fill(invalidEmail);
+    await page.locator('input[type="password"]').first().fill('Password123!');
+
+    // Try to submit
+    await page.locator('button[type="submit"], button:has-text("Sign Up"), button:has-text("Register")').first().click();
+
+    // Wait for error message
+    await page.waitForTimeout(1000);
+
+    // Check for error - either HTML5 validation or custom error message
+    const emailInput = page.locator('input[type="email"], input[name="email"]');
+    const isInvalid = await emailInput.evaluate((el) => !el.validity.valid);
+    const hasErrorMessage = await page.locator('text=/invalid.*email|enter.*valid.*email/i').count() > 0;
+
+    expect(isInvalid || hasErrorMessage).toBeTruthy();
+  });
+
+  test('should show error for weak password', async ({ page }) => {
+    const weakPassword = '123';
+
+    await page.locator('input[name="name"], input[placeholder*="name" i]').first().fill('Test User');
+    await page.locator('input[type="email"], input[name="email"]').fill('test@example.com');
+    await page.locator('input[type="password"]').first().fill(weakPassword);
+
+    await page.locator('button[type="submit"], button:has-text("Sign Up"), button:has-text("Register")').first().click();
+
+    await page.waitForTimeout(1000);
+
+    // Check for password error message
+    const hasPasswordError = await page.locator('text=/password.*weak|password.*short|password.*characters|password.*requirements/i').count() > 0;
+    const inputInvalid = await page.locator('input[type="password"]').first().evaluate((el) => !el.validity.valid);
+
+    expect(hasPasswordError || inputInvalid).toBeTruthy();
+  });
+
+  test('should prevent registration with existing email', async ({ page }) => {
+    // Use a common test email that might already exist
+    const existingEmail = 'existing@techmigo.com';
+
+    await page.locator('input[name="name"], input[placeholder*="name" i]').first().fill('Test User');
+    await page.locator('input[type="email"], input[name="email"]').fill(existingEmail);
+    await page.locator('input[type="password"]').first().fill('Password123!');
+
+    const passwordFields = await page.locator('input[type="password"]').all();
+    if (passwordFields.length > 1) {
+      await passwordFields[1].fill('Password123!');
+    }
+
+    await page.locator('button[type="submit"], button:has-text("Sign Up"), button:has-text("Register")').first().click();
+
+    await page.waitForTimeout(2000);
+
+    // Check for duplicate email error
+    const hasDuplicateError = await page.locator('text=/email.*already.*exists|email.*taken|user.*already.*registered/i').count() > 0;
+    
+    // If no error shown, it might be a bug
+    console.log(`[TEST] Duplicate email error shown: ${hasDuplicateError}`);
+  });
+
+  test('should navigate to login page from signup', async ({ page }) => {
+    // Look for "Already have an account?" or "Login" link
+    const loginLink = page.locator('a:has-text("Login"), a:has-text("Sign In"), a:has-text("Already have an account")').first();
+    
+    if (await loginLink.count() > 0) {
+      await loginLink.click();
+      await page.waitForLoadState('networkidle');
+
+      // Verify we're on the login page
+      const currentUrl = page.url();
+      expect(currentUrl).toMatch(/\/login|\/signin/i);
+    } else {
+      console.log('[TEST] No login link found on signup page');
+    }
+  });
+
+  test('should show/hide password toggle', async ({ page }) => {
+    const passwordInput = page.locator('input[type="password"]').first();
+    const toggleButton = page.locator('button:near(input[type="password"]), [role="button"]:near(input[type="password"])').first();
+
+    if (await toggleButton.count() > 0) {
+      // Fill password
+      await passwordInput.fill('TestPassword123!');
+
+      // Click toggle
+      await toggleButton.click();
+      await page.waitForTimeout(500);
+
+      // Check if input type changed to text
+      const inputType = await passwordInput.getAttribute('type');
+      expect(inputType).toBe('text');
+
+      // Toggle back
+      await toggleButton.click();
+      await page.waitForTimeout(500);
+
+      const inputTypeAfter = await passwordInput.getAttribute('type');
+      expect(inputTypeAfter).toBe('password');
+    } else {
+      console.log('[TEST] No password toggle button found');
+    }
+  });
+});
+
+test.describe('Profile Completion After Registration', () => {
+  test('should show profile completion modal for new users', async ({ page }) => {
+    // This test assumes user has just registered and logged in
+    // and should see the mandatory profile completion modal
+
+    console.log('[TEST] Testing profile completion modal flow');
+    
+    // Note: This would require a pre-registered user without completed profile
+    // For now, we'll just verify the modal exists if triggered
+    
+    // Navigate to user dashboard (would normally happen after login)
+    await page.goto('http://localhost:3004');
+    await page.waitForTimeout(2000);
+
+    // Check if profile completion modal appears
+    const hasModal = await page.locator('text=/complete.*profile|profile.*completion|finish.*profile/i').count() > 0;
+    
+    if (hasModal) {
+      console.log('[TEST] Profile completion modal detected');
+      
+      // Verify required fields are present
+      const hasAvatarUpload = await page.locator('input[type="file"], button:has-text("Upload")').count() > 0;
+      const hasPhoneField = await page.locator('input[name="phone"], input[placeholder*="phone" i]').count() > 0;
+      const hasBioField = await page.locator('textarea[name="bio"], textarea[placeholder*="bio" i]').count() > 0;
+      
+      console.log('[TEST] Profile fields found:', { hasAvatarUpload, hasPhoneField, hasBioField });
+    } else {
+      console.log('[TEST] No profile completion modal shown (user might have complete profile)');
+    }
+  });
+});

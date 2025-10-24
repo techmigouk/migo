@@ -1,0 +1,74 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+/coverage
+test-results/
+playwright-report/
+playwright/.cache/
+*.log
+
+# Next.js
+.next/
+out/
+build
+dist/
+
+# Environment variables
+.env
+.env*.local
+.env.production
+.env.development
+
+# Turbo
+.turbo/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local env files
+*.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Uploads (user generated content)
+/admin/public/uploads/*
+!/admin/public/uploads/.gitkeep
+/front/public/uploads/*
+!/front/public/uploads/.gitkeep
+/user/public/uploads/*
+!/user/public/uploads/.gitkeep
+
+# Database
+*.sqlite
+*.db
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+logs
+*.log
+
+# Temporary files
+tmp/
+temp/

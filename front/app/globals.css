@@ -1,0 +1,468 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  /* Techmigo Brand Colors - Light Mode */
+  --background: #0c1e3d; /* Edges outside boxed container */
+  --foreground: oklch(0.15 0.05 250); /* Navy for text */
+
+  --card: oklch(1 0 0); /* White cards */
+  --card-foreground: oklch(0.15 0.05 250); /* Navy text on cards */
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.05 250);
+
+  /* Primary = Navy (#0A1F44) */
+  --primary: oklch(0.15 0.05 250);
+  --primary-foreground: oklch(1 0 0); /* White text on navy */
+
+  /* Secondary = Charcoal (#121826) */
+  --secondary: oklch(0.12 0.02 250);
+  --secondary-foreground: oklch(1 0 0); /* White text on charcoal */
+
+  /* Accent = Amber (#F59E0B) */
+  --accent: oklch(0.75 0.15 70);
+  --accent-foreground: oklch(0.15 0.05 250); /* Navy text on amber */
+
+  /* Muted = Cool Gray */
+  --muted: oklch(0.96 0.005 250); /* Very light gray background */
+  --muted-foreground: oklch(0.5 0.01 250); /* Slate gray text */
+
+  --destructive: oklch(0.55 0.22 25); /* Red */
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.85 0.01 250); /* Cool gray borders */
+  --input: oklch(0.85 0.01 250);
+  --ring: oklch(0.75 0.15 70); /* Amber focus ring */
+
+  --radius: 0.75rem;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  /* Techmigo Brand Colors - Dark Mode */
+  --background: oklch(0.12 0.02 250); /* Charcoal background */
+  --foreground: oklch(1 0 0); /* White text */
+
+  --card: oklch(0.15 0.05 250); /* Navy cards */
+  --card-foreground: oklch(1 0 0);
+
+  --popover: oklch(0.15 0.05 250);
+  --popover-foreground: oklch(1 0 0);
+
+  /* Primary = Amber in dark mode for contrast */
+  --primary: oklch(0.75 0.15 70);
+  --primary-foreground: oklch(0.15 0.05 250);
+
+  /* Secondary = Navy */
+  --secondary: oklch(0.15 0.05 250);
+  --secondary-foreground: oklch(1 0 0);
+
+  /* Accent = Gold */
+  --accent: oklch(0.82 0.14 85);
+  --accent-foreground: oklch(0.15 0.05 250);
+
+  --muted: oklch(0.2 0.03 250);
+  --muted-foreground: oklch(0.7 0.01 250);
+
+  --destructive: oklch(0.6 0.24 25);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.3 0.02 250);
+  --input: oklch(0.3 0.02 250);
+  --ring: oklch(0.75 0.15 70);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+  /* Semantic tokens and aliases */
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-navy: oklch(0.15 0.05 250);
+  --color-charcoal: oklch(0.12 0.02 250);
+  --color-amber: oklch(0.75 0.15 70);
+  --color-gold: oklch(0.82 0.14 85);
+  --color-cool-gray: oklch(0.85 0.01 250);
+  --color-slate-gray: oklch(0.5 0.01 250);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* Base styles converted from Tailwind @layer base */
+* {
+  box-sizing: border-box;
+  border-color: var(--color-border);
+  outline-color: rgba(0,0,0,0.05);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  line-height: 1.6;
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  /* balanced wrapping handled by browser where supported */
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Utility animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, oklch(0.82 0.14 85 / 0.3), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Boxed layout removed — using original full-width/tailwind container behavior */
+
+/* Futuristic How It Works styles */
+.future-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .future-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+.future-card {
+  background: linear-gradient(180deg, rgba(18,24,38,0.85), rgba(10,31,68,0.9));
+  border: 1px solid rgba(245,158,11,0.07);
+  border-radius: 16px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.future-number {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: rgba(245,158,11,0.12);
+}
+
+.future-icon {
+  width: 56px;
+  height: 56px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(245,158,11,0.08);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.future-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px -12px rgba(0,0,0,0.6), 0 0 30px rgba(245,158,11,0.08);
+}
+
+/* Hero CTA styles */
+.hero-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.6rem;
+  border-radius: 12px;
+  font-weight: 800;
+  color: #071828;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  box-shadow: 0 10px 30px rgba(4,18,36,0.18), 0 2px 8px rgba(245,158,11,0.12) inset;
+  transition: transform 0.28s cubic-bezier(0.22,1,0.36,1), box-shadow 0.28s;
+}
+
+.hero-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(120deg, rgba(255,255,255,0.12), transparent 45%);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  transform: translateX(-40%);
+  transition: transform 0.8s cubic-bezier(0.22,1,0.36,1);
+}
+
+.hero-cta:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 26px 64px rgba(4,18,36,0.26), 0 8px 16px rgba(245,158,11,0.12) inset;
+}
+
+.hero-cta:hover::after {
+  transform: translateX(20%);
+}
+
+.hero-cta:focus {
+  outline: 3px solid rgba(245,158,11,0.16);
+  outline-offset: 3px;
+}
+
+.hero-cta .cta-badge {
+  background: rgba(7,24,40,0.06);
+  padding: 0.15rem 0.45rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Logo badge: stacked white and color images. White visible by default, color fades in on hover */
+.logo-badge {
+  position: relative;
+  background: transparent;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  cursor: pointer;
+}
+
+.logo-badge:hover {
+  transform: translateY(-4px);
+}
+
+.logo-badge .logo-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logo-badge .logo-color {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: opacity 220ms ease, transform 220ms ease;
+  opacity: 0;
+  transform: translateY(2px);
+}
+
+.logo-badge:hover .logo-color {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.logo-badge .logo-white {
+  position: relative;
+  z-index: 1;
+}
+
+/* Join CTA: premium gradient button used in the final CTA */
+.join-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.95rem 1.8rem;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 1.125rem;
+  color: var(--primary-foreground);
+  background: linear-gradient(90deg, #0a1f44 0%, #071428 50%);
+  box-shadow: 0 10px 30px rgba(7,24,40,0.35), 0 2px 10px rgba(245,158,11,0.08) inset;
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms, filter 220ms;
+}
+
+.join-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(245,158,11,0.08), rgba(255,255,255,0.04));
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  transform: translateX(-30%);
+  transition: transform 600ms cubic-bezier(.2,.9,.2,1);
+}
+
+.join-cta:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 22px 60px rgba(7,24,40,0.45), 0 8px 20px rgba(245,158,11,0.12) inset;
+}
+
+.join-cta:hover::after {
+  transform: translateX(10%);
+}
+
+.join-cta:focus {
+  outline: 3px solid rgba(245,158,11,0.16);
+  outline-offset: 4px;
+}
+
+.join-cta .badge {
+  background: var(--color-muted);
+  color: var(--color-primary);
+  font-weight: 900;
+  padding: 0.15rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+/* Trusted section: premium glass badges for company logos */
+.trusted-section {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+.trusted-section .trusted-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 1rem 2rem;
+  align-items: center;
+  justify-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .trusted-section .trusted-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem 2rem;
+  }
+}
+
+.trusted-badge {
+  width: 160px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem; /* reduced padding so logo can be larger */
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--accent); /* orange edge */
+  transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease, border-color 200ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.trusted-badge:focus,
+.trusted-badge:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(2,6,23,0.6), 0 2px 10px rgba(245,158,11,0.06) inset;
+  background: var(--accent); /* orange on hover */
+  border-color: var(--accent);
+}
+
+.trusted-badge .trusted-logo { width: 100px; height: 100%; object-fit: contain; }
+.trusted-badge .trusted-logo-color { position:absolute; left:50%; top:50%; transform:translate(-50%, -50%) translateY(4px); opacity:0; transition:opacity 180ms ease, transform 180ms ease; height:100%; }
+.trusted-badge:hover .trusted-logo-color, .trusted-badge:focus .trusted-logo-color { opacity:1; transform:translateY(0); }
+.trusted-badge .trusted-logo-white { position:relative; z-index:1; left:50%; top:50%; transform:translate(-50%, -50%); height:100%; }
+
+.trusted-caption { font-size:0.95rem; color:var(--muted-foreground); text-align:center; margin-bottom:0.75rem; }
+
+.trusted-section .verified-dot { width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 4px 12px rgba(245,158,11,0.18); margin-left:0.5rem; }
+
+/* Text-based trusted badges */
+.trusted-text-badge { padding: 0.3rem 0.6rem; }
+.trusted-text-badge .trusted-text { font-weight:800; letter-spacing:0.06em; color:#ffffff; font-size:0.95rem; transition: color 180ms ease; }
+.trusted-text-badge:hover .trusted-text,
+.trusted-text-badge:focus .trusted-text { color: var(--primary); }
+
+/* Bleed helper: makes an element's background reach the viewport edges while inner content remains boxed */
+.bleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+.bleed .container {
+  /* keep inner content aligned and boxed */
+  max-width: var(--site-content-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--site-gutter-md);
+  padding-right: var(--site-gutter-md);
+}
+

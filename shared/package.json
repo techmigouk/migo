@@ -1,0 +1,33 @@
+{
+  "name": "@amigo/shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./client": "./dist/client.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.2.0",
+    "mongoose": "^8.19.2",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.9",
+    "stripe": "^19.1.0",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^22.18.12",
+    "@types/nodemailer": "^7.0.2",
+    "typescript": "^5.9.3"
+  }
+}

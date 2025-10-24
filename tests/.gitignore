@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+
+# Test results
+test-results/
+playwright-report/
+playwright/.cache/
+
+# AI analysis reports (optional - remove this line if you want to commit them)
+test-results/ai-analysis/
+
+# Screenshots and videos
+screenshots/
+videos/
+traces/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
