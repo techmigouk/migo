@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import {
   Home,
   BookOpen,
@@ -475,6 +476,7 @@ const mockProducts: IProduct[] = [
 // ============================================================================
 
 export default function UserDashboard() {
+  const router = useRouter()
   const [activeScreen, setActiveScreen] = useState<string>("dashboard")
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
   const [isDarkMode, setIsDarkMode] = useState(true)
@@ -498,6 +500,20 @@ export default function UserDashboard() {
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [profileComplete, setProfileComplete] = useState(true)
   const [currentUser, setCurrentUser] = useState<any>(null)
+
+  // Check authentication on mount - redirect to login if not authenticated
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    const token = localStorage.getItem("token")
+    const user = localStorage.getItem("user")
+    
+    // If no token or user, redirect to login page
+    if (!token && !user) {
+      window.location.href = "http://localhost:3000/login"
+      return
+    }
+  }, [])
 
   // Detect mobile viewport
   useEffect(() => {
