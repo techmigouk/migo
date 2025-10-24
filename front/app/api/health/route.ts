@@ -12,7 +12,8 @@ export async function GET() {
         uri_preview: process.env.MONGODB_URI 
           ? `${process.env.MONGODB_URI.substring(0, 20)}...` 
           : 'NOT SET',
-        connected: false
+        connected: false,
+        error: null as string | null
       },
       urls: {
         front: process.env.NEXT_PUBLIC_FRONT_URL || 'NOT SET',
@@ -27,6 +28,7 @@ export async function GET() {
       checks.mongodb.connected = true
     } catch (error: any) {
       checks.mongodb.connected = false
+      checks.mongodb.error = error.message || String(error)
       checks.status = "error"
     }
 
