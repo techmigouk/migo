@@ -11,6 +11,9 @@ NEXT_PUBLIC_ADMIN_URL=https://admin.techmigo.co.uk
 # Database
 MONGODB_URI=mongodb+srv://techmigouk_db_user:peDzbQUMxBxJhM5j@techmigo.t4bbyoi.mongodb.net/amigo_db?retryWrites=true&w=majority
 
+# Authentication (IMPORTANT!)
+JWT_SECRET=your-super-secure-random-64-character-string-change-this-immediately-in-production
+
 NODE_ENV=production
 
 # Optional: Stripe (if using payments)
