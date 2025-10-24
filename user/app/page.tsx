@@ -512,7 +512,7 @@ export default function UserDashboard() {
     if (!token && !user) {
       // Use production URL in production, localhost in development
       const loginUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://migo-front.vercel.app/login'
+        ? 'https://techmigo.co.uk/login'
         : 'http://localhost:3000/login'
       
       window.location.href = loginUrl
@@ -821,8 +821,12 @@ export default function UserDashboard() {
     localStorage.removeItem("user")
     localStorage.removeItem("token")
     
-    // Redirect to login page
-    window.location.href = "http://localhost:3000/login"
+    // Redirect to login page - use production URL in production
+    const loginUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://migo-front.vercel.app/login'
+      : 'http://localhost:3000/login'
+    
+    window.location.href = loginUrl
   }
 
   const isPro = userStats.subscriptionTier === "Pro"
@@ -3828,8 +3832,11 @@ export default function UserDashboard() {
       localStorage.removeItem("user")
       localStorage.removeItem("token")
       
-      // Redirect to login page
-      window.location.href = "http://localhost:3000/login"
+      // Redirect to login page (production-aware)
+      const loginUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://techmigo.co.uk/login'
+        : 'http://localhost:3000/login'
+      window.location.href = loginUrl
     }
 
     return (

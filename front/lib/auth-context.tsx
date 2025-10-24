@@ -58,7 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // Redirect to user portal with only the token (user will fetch data from API)
     // This prevents URL from being too long with avatar data
-    window.location.href = `http://localhost:3004/?token=${data.token}`
+    const userDashboardUrl = process.env.NODE_ENV === 'production'
+      ? `${process.env.NEXT_PUBLIC_USER_DASHBOARD_URL || 'https://app.techmigo.co.uk'}/?token=${data.token}`
+      : `http://localhost:3004/?token=${data.token}`
+    window.location.href = userDashboardUrl
   }
 
   const logout = () => {

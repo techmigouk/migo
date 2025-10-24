@@ -15,7 +15,10 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       try {
         setLoading(true)
-        const response = await fetch('http://localhost:3000/api/courses?status=published')
+        const apiUrl = process.env.NODE_ENV === 'production'
+          ? `${process.env.NEXT_PUBLIC_APP_URL || 'https://techmigo.co.uk'}/api/courses?status=published`
+          : 'http://localhost:3000/api/courses?status=published'
+        const response = await fetch(apiUrl)
         const data = await response.json()
         
         if (data.success && data.courses) {

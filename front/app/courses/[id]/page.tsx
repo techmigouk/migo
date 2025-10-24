@@ -56,7 +56,10 @@ export default function CourseDetailPage() {
     const fetchCourse = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`http://localhost:3000/api/courses/${courseId}`)
+        const apiUrl = process.env.NODE_ENV === 'production'
+          ? `${process.env.NEXT_PUBLIC_APP_URL || 'https://techmigo.co.uk'}/api/courses/${courseId}`
+          : `http://localhost:3000/api/courses/${courseId}`
+        const response = await fetch(apiUrl)
         const data = await response.json()
         
         if (data.success && data.course) {
@@ -83,7 +86,10 @@ export default function CourseDetailPage() {
     try {
       setLoadingRelated(true)
       console.log('Fetching related courses...')
-      const response = await fetch(`http://localhost:3000/api/courses?status=published&limit=10`)
+      const apiUrl = process.env.NODE_ENV === 'production'
+        ? `${process.env.NEXT_PUBLIC_APP_URL || 'https://techmigo.co.uk'}/api/courses?status=published&limit=10`
+        : `http://localhost:3000/api/courses?status=published&limit=10`
+      const response = await fetch(apiUrl)
       const data = await response.json()
       
       console.log('Related courses API response:', data)
