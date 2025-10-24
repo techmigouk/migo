@@ -101,7 +101,7 @@ export default async function HomePage() {
                 Browse Courses
               </Link>
             </div>
-            <p className="text-[#d1d5db] text-sm">No credit card required.</p>
+            <p className="text-[#d1d5db] text-sm">No credit card required to register.</p>
           </div>
           <div className="relative">
             <img src="/diverse-students-learning-coding.jpg" alt="Students learning" className="rounded-2xl shadow-2xl" />

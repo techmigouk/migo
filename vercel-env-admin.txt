@@ -1,0 +1,22 @@
+# Environment Variables for migo-admin (Admin Dashboard)
+# Copy these to Vercel Dashboard → Settings → Environment Variables
+
+MONGODB_URI=mongodb+srv://techmigouk_db_user:peDzbQUMxBxJhM5j@techmigo.t4bbyoi.mongodb.net/amigo_db?retryWrites=true&w=majority
+
+JWT_SECRET=your-super-secure-random-64-character-string-here-change-this
+
+NEXT_PUBLIC_API_URL=https://your-admin-vercel-url.vercel.app
+
+NODE_ENV=production
+
+# Optional: OpenAI (if using AI features)
+OPENAI_API_KEY=sk-your-openai-key-here
+
+# Optional: Email
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+
+# Optional: File Upload
+MAX_FILE_SIZE=10485760
