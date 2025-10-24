@@ -510,7 +510,12 @@ export default function UserDashboard() {
     
     // If no token or user, redirect to login page
     if (!token && !user) {
-      window.location.href = "http://localhost:3000/login"
+      // Use production URL in production, localhost in development
+      const loginUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://migo-front.vercel.app/login'
+        : 'http://localhost:3000/login'
+      
+      window.location.href = loginUrl
       return
     }
   }, [])
