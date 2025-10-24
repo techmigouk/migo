@@ -2,8 +2,9 @@ import mongoose, { Connection } from 'mongoose'
 
 const MONGODB_URI = process.env.MONGODB_URI
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable')
+// Only check at runtime, not build time
+if (!MONGODB_URI && process.env.NODE_ENV !== 'production') {
+  console.warn('Warning: MONGODB_URI environment variable is not defined')
 }
 
 let cached = global.mongoose
@@ -14,6 +15,10 @@ if (!cached) {
 
 export const db = {
   connect: async () => {
+    if (!MONGODB_URI) {
+      throw new Error('Please define the MONGODB_URI environment variable')
+    }
+    
     if (cached.conn) {
       return cached.conn
     }
