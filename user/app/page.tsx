@@ -4512,22 +4512,49 @@ export default function UserDashboard() {
       const file = e.target.files?.[0]
       if (!file) return
 
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file (JPG, PNG, GIF, etc.)')
+        return
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB')
+        return
+      }
+
       setUploading(true)
       const formDataUpload = new FormData()
       formDataUpload.append('file', file)
 
       try {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          throw new Error('No authentication token found')
+        }
+
         const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/upload', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
           body: formDataUpload,
         })
+
         const data = await response.json()
+        
+        console.log('Upload response:', { success: data.success, url: data.url, error: data.error })
+        
         if (data.url) {
           setFormData({ ...formData, avatar: data.url })
+          alert('Image uploaded successfully!')
+        } else {
+          throw new Error(data.error || 'Failed to get image URL')
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error uploading image:', error)
-        alert('Failed to upload image')
+        alert(`Failed to upload image: ${error.message || 'Unknown error'}`)
       } finally {
         setUploading(false)
       }
@@ -4561,6 +4588,8 @@ export default function UserDashboard() {
 
         const data = await response.json()
         
+        console.log('Profile complete response:', { success: data.success, error: data.error, status: response.status })
+        
         if (data.success) {
           // Update localStorage
           localStorage.setItem('user', JSON.stringify(data.user))
@@ -4577,11 +4606,12 @@ export default function UserDashboard() {
           
           alert('Profile completed successfully! Welcome to TechMigo!')
         } else {
+          console.error('Profile completion failed:', data)
           alert(data.error || 'Failed to complete profile')
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error completing profile:', error)
-        alert('Failed to complete profile')
+        alert(`Failed to complete profile: ${error.message || 'Unknown error'}`)
       } finally {
         setSubmitting(false)
       }
