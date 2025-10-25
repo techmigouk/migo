@@ -150,7 +150,7 @@ export function CourseLibrary() {
       
       // Set a timeout to prevent long waits
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 2000)
+        setTimeout(() => reject(new Error('Request timeout')), 5000)
       )
       
       const apiClient = createFrontAPIClient(adminToken || '')
@@ -160,10 +160,13 @@ export function CourseLibrary() {
       
       console.log('Fetch courses response:', response)
       
-      if (response.success && response.courses && response.courses.length > 0) {
-        console.log('Number of courses fetched:', response.courses.length)
+      // Handle both response formats: { success, courses } or { courses }
+      const coursesData = response.courses || (response.success && response.courses) || []
+      
+      if (coursesData.length > 0) {
+        console.log('Number of courses fetched:', coursesData.length)
         // Map _id to id for UI consistency
-        const mappedCourses = response.courses.map((course: any) => ({
+        const mappedCourses = coursesData.map((course: any) => ({
           ...course,
           id: course._id || course.id,
         }))
@@ -259,7 +262,8 @@ export function CourseLibrary() {
 
         console.log('API Response:', response)
 
-        if (response.success) {
+        // API returns the created course directly or { success, course }
+        if (response && (response._id || response.id || response.success)) {
           alert('Course created successfully!')
           setShowCreateCourseDialog(false)
           fetchCourses()
@@ -328,7 +332,7 @@ export function CourseLibrary() {
         const apiClient = createFrontAPIClient(adminToken || '')
         const response = await apiClient.put(`/api/courses/${editingCourse.id || editingCourse._id}`, courseData) as any
 
-        if (response.success) {
+        if (response && (response.success || response._id || response.id)) {
           setShowCreateCourseDialog(false)
           resetForm()
           fetchCourses()
@@ -396,7 +400,7 @@ export function CourseLibrary() {
         const apiClient = createFrontAPIClient(adminToken || '')
         const response = await apiClient.post('/api/courses', courseData) as any
 
-        if (response.success) {
+        if (response && (response.success || response._id || response.id)) {
           fetchCourses()
           return
         }
@@ -434,7 +438,7 @@ export function CourseLibrary() {
         const apiClient = createFrontAPIClient(adminToken || '')
         const response = await apiClient.delete(`/api/courses/${course.id || course._id}`) as any
 
-        if (response.success) {
+        if (response && (response.success || response.message)) {
           fetchCourses()
           return
         }

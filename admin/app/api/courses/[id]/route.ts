@@ -12,15 +12,15 @@ export async function GET(
     
     if (!course) {
       return NextResponse.json(
-        { error: 'Course not found' },
+        { success: false, error: 'Course not found' },
         { status: 404 }
       );
     }
     
-    return NextResponse.json(course);
+    return NextResponse.json({ success: true, course });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to fetch course' },
+      { success: false, error: 'Failed to fetch course' },
       { status: 500 }
     );
   }
@@ -41,15 +41,15 @@ export async function PUT(
     
     if (!course) {
       return NextResponse.json(
-        { error: 'Course not found' },
+        { success: false, error: 'Course not found' },
         { status: 404 }
       );
     }
     
-    return NextResponse.json(course);
+    return NextResponse.json({ success: true, course });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to update course' },
+      { success: false, error: 'Failed to update course' },
       { status: 500 }
     );
   }
@@ -65,15 +65,15 @@ export async function DELETE(
     
     if (!course) {
       return NextResponse.json(
-        { error: 'Course not found' },
+        { success: false, error: 'Course not found' },
         { status: 404 }
       );
     }
     
-    return NextResponse.json({ message: 'Course deleted successfully' });
+    return NextResponse.json({ success: true, message: 'Course deleted successfully' });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to delete course' },
+      { success: false, error: 'Failed to delete course' },
       { status: 500 }
     );
   }

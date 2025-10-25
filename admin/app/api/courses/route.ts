@@ -6,10 +6,10 @@ export async function GET() {
   try {
     await db.connect();
     const courses = await CourseModel.find({}).populate('instructor', 'name email');
-    return NextResponse.json({ courses });
+    return NextResponse.json({ success: true, courses });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to fetch courses' },
+      { success: false, error: 'Failed to fetch courses' },
       { status: 500 }
     );
   }
@@ -22,10 +22,10 @@ export async function POST(request: NextRequest) {
     const course = new CourseModel(body);
     await course.save();
     
-    return NextResponse.json(course, { status: 201 });
+    return NextResponse.json({ success: true, course }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to create course' },
+      { success: false, error: 'Failed to create course' },
       { status: 500 }
     );
   }
