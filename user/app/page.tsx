@@ -502,6 +502,8 @@ export default function UserDashboard() {
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [showPricingModal, setShowPricingModal] = useState(false)
   const [pricingLoading, setPricingLoading] = useState<string | null>(null)
+  const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null)
+  const [showCoursePreview, setShowCoursePreview] = useState(false)
 
   // Check authentication on mount - redirect to login if not authenticated
   useEffect(() => {
@@ -1701,12 +1703,13 @@ export default function UserDashboard() {
                   <Button
                     className="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-semibold"
                     onClick={() => {
-                      if (!checkProfileComplete('start this course')) return
-                      setActiveScreen("course-player")
+                      if (!checkProfileComplete('enroll in this course')) return
+                      setSelectedCourse(course)
+                      setShowCoursePreview(true)
                     }}
                   >
-                    <Play className="mr-2" size={16} />
-                    Start Course
+                    <BookOpen className="mr-2" size={16} />
+                    Enroll Now
                   </Button>
                 )}
 
@@ -4513,6 +4516,177 @@ export default function UserDashboard() {
     )
   }
 
+  // Course Preview Modal Component
+  const CoursePreviewModal = () => {
+    if (!selectedCourse) return null
+
+    const handleEnroll = () => {
+      // Here you would make an API call to enroll the user
+      // For now, we'll just navigate to the course player
+      setShowCoursePreview(false)
+      setActiveScreen("course-player")
+    }
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div className="bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="relative">
+            {/* Course Header Image */}
+            <div className="relative h-64 bg-gradient-to-br from-amber-500/20 to-gray-800">
+              <img
+                src={selectedCourse.imageUrl || "/placeholder.svg"}
+                alt={selectedCourse.title}
+                className="w-full h-full object-cover opacity-50"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowCoursePreview(false)}
+                className="absolute top-4 right-4 text-white hover:bg-white/10"
+              >
+                <X size={24} />
+              </Button>
+            </div>
+
+            {/* Course Content */}
+            <div className="p-8">
+              {/* Course Title & Meta */}
+              <div className="mb-6">
+                <Badge className="bg-amber-500 text-gray-900 mb-3">{selectedCourse.category}</Badge>
+                <h2 className="text-3xl font-bold text-white mb-2">{selectedCourse.title}</h2>
+                <p className="text-gray-400">Instructor: {selectedCourse.instructor}</p>
+              </div>
+
+              {/* Course Stats */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-4 text-center">
+                    <Clock className="mx-auto mb-2 text-amber-500" size={24} />
+                    <p className="text-white font-semibold">24 Hours</p>
+                    <p className="text-gray-400 text-sm">Duration</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-4 text-center">
+                    <BookOpen className="mx-auto mb-2 text-amber-500" size={24} />
+                    <p className="text-white font-semibold">{selectedCourse.lessonsLeft || 32} Lessons</p>
+                    <p className="text-gray-400 text-sm">Content</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-4 text-center">
+                    <Award className="mx-auto mb-2 text-amber-500" size={24} />
+                    <p className="text-white font-semibold">Certificate</p>
+                    <p className="text-gray-400 text-sm">Included</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Intro Video */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-white mb-3">Course Introduction</h3>
+                <Card className="bg-gray-800 border-gray-700 overflow-hidden">
+                  <div className="relative bg-black aspect-video flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent"></div>
+                    <Button
+                      size="lg"
+                      className="bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-full w-20 h-20"
+                    >
+                      <Play size={32} />
+                    </Button>
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <p className="text-white text-sm">Watch Introduction (3:45)</p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Course Description */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-white mb-3">What You'll Learn</h3>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <ul className="space-y-3">
+                      <li className="flex items-start gap-3">
+                        <Check className="text-amber-500 flex-shrink-0 mt-1" size={20} />
+                        <span className="text-gray-300">Master core concepts and advanced techniques</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <Check className="text-amber-500 flex-shrink-0 mt-1" size={20} />
+                        <span className="text-gray-300">Build real-world projects from scratch</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <Check className="text-amber-500 flex-shrink-0 mt-1" size={20} />
+                        <span className="text-gray-300">Get hands-on experience with industry tools</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <Check className="text-amber-500 flex-shrink-0 mt-1" size={20} />
+                        <span className="text-gray-300">Earn a verified certificate upon completion</span>
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Course Curriculum Preview */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-white mb-3">Course Curriculum</h3>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6 space-y-3">
+                    {[
+                      { title: "Introduction to Fundamentals", lessons: 8, duration: "2h 15m" },
+                      { title: "Core Concepts & Techniques", lessons: 12, duration: "4h 30m" },
+                      { title: "Building Real Projects", lessons: 10, duration: "5h 45m" },
+                      { title: "Advanced Topics", lessons: 6, duration: "3h 20m", locked: !isPro },
+                    ].map((module, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-gray-900 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 font-bold">
+                            {index + 1}
+                          </div>
+                          <div>
+                            <p className="text-white font-semibold">{module.title}</p>
+                            <p className="text-gray-400 text-sm">
+                              {module.lessons} lessons • {module.duration}
+                            </p>
+                          </div>
+                        </div>
+                        {module.locked && (
+                          <Lock className="text-amber-500" size={20} />
+                        )}
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Enroll Button */}
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleEnroll}
+                  className="flex-1 bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold text-lg py-6"
+                >
+                  <BookOpen className="mr-2" size={20} />
+                  Start Learning Now
+                </Button>
+                <Button
+                  onClick={() => setShowCoursePreview(false)}
+                  variant="outline"
+                  className="border-gray-700 text-gray-300 hover:bg-gray-800 py-6"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Pricing Modal Component
   const PricingModal = () => {
     const plans = [
@@ -5065,6 +5239,9 @@ export default function UserDashboard() {
       
       {/* Pricing Modal */}
       {showPricingModal && <PricingModal />}
+      
+      {/* Course Preview Modal */}
+      {showCoursePreview && <CoursePreviewModal />}
       
       <Sidebar />
       
