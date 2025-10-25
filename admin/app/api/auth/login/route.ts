@@ -72,10 +72,19 @@ export async function POST(req: Request) {
       },
       token
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error("Admin login error:", error)
+    
+    // Specific error messages for common issues
+    if (error.message?.includes('MONGODB_URI') || error.message?.includes('database')) {
+      return NextResponse.json(
+        { error: "Database configuration error. Please contact support." },
+        { status: 500 }
+      )
+    }
+    
     return NextResponse.json(
-      { error: "Login failed" },
+      { error: "Login failed. Please try again." },
       { status: 500 }
     )
   }
