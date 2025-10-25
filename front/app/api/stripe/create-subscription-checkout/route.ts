@@ -21,16 +21,27 @@ const PRICE_IDS = {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Stripe is configured
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('STRIPE_SECRET_KEY is not configured')
+      return NextResponse.json(
+        { error: 'Payment system is not configured. Please contact support.' },
+        { status: 503 }
+      );
+    }
+
     // Verify authentication
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      console.error('No authorization header provided')
+      return NextResponse.json({ error: 'Please login to subscribe' }, { status: 401 });
     }
 
     const token = authHeader.substring(7);
     const payload = authUtils.verifyToken(token);
     if (!payload) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      console.error('Invalid token')
+      return NextResponse.json({ error: 'Invalid session. Please login again.' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -67,6 +78,13 @@ export async function POST(request: NextRequest) {
 
     // Create subscription checkout session
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    
+    console.log('Creating Stripe checkout session:', {
+      priceId: finalPriceId,
+      customerId: customer.id,
+      userId: payload.userId
+    });
+    
     const session = await stripeUtils.createSubscriptionCheckoutSession(
       successUrl || `${baseUrl}/dashboard?subscription=success`,
       cancelUrl || `${baseUrl}/pricing?canceled=true`,
@@ -79,14 +97,28 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    console.log('Stripe session created:', session.id);
+
     return NextResponse.json({
       sessionId: session.id,
       url: session.url,
     });
   } catch (error: any) {
     console.error('Create subscription checkout error:', error);
+    console.error('Error stack:', error.stack);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to create subscription checkout';
+    if (error.message?.includes('STRIPE_SECRET_KEY')) {
+      errorMessage = 'Payment system is not configured. Please contact support.';
+    } else if (error.message?.includes('No such price')) {
+      errorMessage = 'Invalid pricing plan. Please try another plan or contact support.';
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
     return NextResponse.json(
-      { error: error.message || 'Failed to create subscription checkout' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
