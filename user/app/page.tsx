@@ -4534,7 +4534,7 @@ export default function UserDashboard() {
           throw new Error('No authentication token found')
         }
 
-        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/upload', {
+        const response = await fetch('/api/upload', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -4574,7 +4574,7 @@ export default function UserDashboard() {
 
       setSubmitting(true)
       try {
-        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/profile/complete', {
+        const response = await fetch('/api/profile/complete', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
