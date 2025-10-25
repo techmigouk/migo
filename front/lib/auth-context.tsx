@@ -61,6 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userDashboardUrl = process.env.NODE_ENV === 'production'
       ? `${process.env.NEXT_PUBLIC_USER_DASHBOARD_URL || 'https://app.techmigo.co.uk'}/?token=${data.token}`
       : `http://localhost:3004/?token=${data.token}`
+    
+    console.log('Redirecting to:', userDashboardUrl)
+    console.log('NODE_ENV:', process.env.NODE_ENV)
+    console.log('NEXT_PUBLIC_USER_DASHBOARD_URL:', process.env.NEXT_PUBLIC_USER_DASHBOARD_URL)
+    
     window.location.href = userDashboardUrl
   }
 
