@@ -833,7 +833,7 @@ export default function UserDashboard() {
     
     // Redirect to login page - use production URL in production
     const loginUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://migo-front.vercel.app/login'
+      ? 'https://techmigo.co.uk/login'
       : 'http://localhost:3000/login'
     
     window.location.href = loginUrl
