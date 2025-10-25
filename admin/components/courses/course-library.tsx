@@ -335,6 +335,7 @@ export function CourseLibrary() {
     setSelectedStatus(course.status)
     setSelectedAccessType((course.price || 0) > 0 ? "Premium" : "Free")
     setThumbnailPreview(course.thumbnail || '')
+    setProjectMediaPreview(course.projectMedia || '')
     setShowCreateCourseDialog(true)
   }
 
