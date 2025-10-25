@@ -4572,6 +4572,18 @@ export default function UserDashboard() {
         return
       }
 
+      console.log('📤 Submitting profile completion:', {
+        userId: currentUser?.id || currentUser?._id,
+        hasName: !!formData.name,
+        hasAvatar: !!formData.avatar,
+        hasPhone: !!formData.phone,
+        hasBio: !!formData.bio,
+        hasCountry: !!formData.country,
+        hasCity: !!formData.city,
+        hasDateOfBirth: !!formData.dateOfBirth,
+        hasLearningGoal: !!formData.learningGoal
+      })
+
       setSubmitting(true)
       try {
         const response = await fetch('/api/profile/complete', {
@@ -4581,7 +4593,7 @@ export default function UserDashboard() {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
           body: JSON.stringify({
-            userId: currentUser?._id,
+            userId: currentUser?.id || currentUser?._id,
             ...formData
           })
         })
