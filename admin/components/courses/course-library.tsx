@@ -28,7 +28,6 @@ import {
   Upload,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { createFrontAPIClient } from "@amigo/shared/client"
 import { useAdminAuth } from "@/lib/auth-context"
 
 interface Course {
@@ -96,13 +95,17 @@ export function CourseLibrary() {
       console.log('Fetching courses...')
       console.log('Admin token:', adminToken ? 'Present' : 'Missing')
       
-      const apiClient = createFrontAPIClient(adminToken || '')
-      const response = await apiClient.get('/api/courses?status=all') as any
+      const response = await fetch('/api/courses?status=all', {
+        headers: {
+          'Authorization': `Bearer ${adminToken}`,
+        },
+      })
       
-      console.log('Fetch courses response:', response)
+      const data = await response.json()
+      console.log('Fetch courses response:', data)
       
       // Handle both response formats: { success, courses } or { courses }
-      const coursesData = response.courses || (response.success && response.courses) || []
+      const coursesData = data.courses || (data.success && data.courses) || []
       
       console.log('Number of courses fetched:', coursesData.length)
       // Map _id to id for UI consistency
@@ -243,13 +246,20 @@ export function CourseLibrary() {
       console.log('Creating course with data:', courseData)
       console.log('Admin token:', adminToken ? 'Present' : 'Missing')
 
-      const apiClient = createFrontAPIClient(adminToken || '')
-      const response = await apiClient.post('/api/courses', courseData) as any
+      const response = await fetch('/api/courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify(courseData),
+      })
 
-      console.log('API Response:', response)
+      const data = await response.json()
+      console.log('API Response:', data)
 
       // API returns the created course directly or { success, course }
-      if (response && (response._id || response.id || response.success)) {
+      if (data && (data._id || data.id || data.success)) {
         alert('Course created successfully!')
         setShowCreateCourseDialog(false)
         fetchCourses()
@@ -298,10 +308,18 @@ export function CourseLibrary() {
         thumbnail: thumbnailPreview || editingCourse.thumbnail || '/placeholder.svg',
       }
 
-      const apiClient = createFrontAPIClient(adminToken || '')
-      const response = await apiClient.put(`/api/courses/${editingCourse.id || editingCourse._id}`, courseData) as any
+      const response = await fetch(`/api/courses/${editingCourse.id || editingCourse._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify(courseData),
+      })
 
-      if (response && (response.success || response._id || response.id)) {
+      const data = await response.json()
+
+      if (data && (data.success || data._id || data.id)) {
         alert('Course updated successfully!')
         setShowCreateCourseDialog(false)
         resetForm()
@@ -354,10 +372,18 @@ export function CourseLibrary() {
         thumbnail: course.thumbnail,
       }
 
-      const apiClient = createFrontAPIClient(adminToken || '')
-      const response = await apiClient.post('/api/courses', courseData) as any
+      const response = await fetch('/api/courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify(courseData),
+      })
 
-      if (response && (response.success || response._id || response.id)) {
+      const data = await response.json()
+
+      if (data && (data.success || data._id || data.id)) {
         alert('Course duplicated successfully!')
         fetchCourses()
       } else {
@@ -376,10 +402,16 @@ export function CourseLibrary() {
     }
 
     try {
-      const apiClient = createFrontAPIClient(adminToken || '')
-      const response = await apiClient.delete(`/api/courses/${course.id || course._id}`) as any
+      const response = await fetch(`/api/courses/${course.id || course._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${adminToken}`,
+        },
+      })
 
-      if (response && (response.success || response.message)) {
+      const data = await response.json()
+
+      if (data && (data.success || data.message)) {
         fetchCourses()
       } else {
         throw new Error('Failed to delete course - invalid response')
