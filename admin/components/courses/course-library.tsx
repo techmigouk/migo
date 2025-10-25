@@ -55,65 +55,10 @@ interface Course {
   updatedAt?: Date
 }
 
-// Mock courses for development/demo
-const mockCourses: Course[] = [
-  {
-    id: "1",
-    title: "Complete Web Development Bootcamp",
-    description: "Learn HTML, CSS, JavaScript, React, Node.js and build real-world projects",
-    category: "Frontend Development",
-    level: "beginner",
-    instructor: { name: "John Smith" },
-    status: "published",
-    price: 49.99,
-    thumbnail: "/web-development-course.png",
-    enrollmentCount: 1250,
-    rating: 4.8,
-    duration: "40 hours",
-    lessons: 120,
-    projectTitle: "Build a Full-Stack E-commerce Site",
-    projectDescription: "Create a complete online store with shopping cart, payments, and admin dashboard"
-  },
-  {
-    id: "2",
-    title: "Python for Data Science",
-    description: "Master Python programming and data analysis with Pandas, NumPy, and Matplotlib",
-    category: "Data Science",
-    level: "intermediate",
-    instructor: { name: "Sarah Johnson" },
-    status: "published",
-    price: 39.99,
-    thumbnail: "/data-science-python.png",
-    enrollmentCount: 890,
-    rating: 4.7,
-    duration: "35 hours",
-    lessons: 95,
-    projectTitle: "Analyze Real-World Dataset",
-    projectDescription: "Complete end-to-end data analysis project with visualization and insights"
-  },
-  {
-    id: "3",
-    title: "Advanced React Patterns",
-    description: "Deep dive into advanced React concepts, hooks, context, and performance optimization",
-    category: "Frontend Development",
-    level: "advanced",
-    instructor: { name: "Mike Chen" },
-    status: "draft",
-    price: 59.99,
-    thumbnail: "/react-advanced.jpg",
-    enrollmentCount: 420,
-    rating: 4.9,
-    duration: "28 hours",
-    lessons: 75,
-    projectTitle: "Build a Scalable Dashboard",
-    projectDescription: "Create a complex, performant React application with advanced state management"
-  }
-]
-
 export function CourseLibrary() {
   const { adminToken } = useAdminAuth()
-  const [courses, setCourses] = useState<Course[]>(mockCourses)
-  const [loading, setLoading] = useState(false)
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
@@ -166,23 +111,18 @@ export function CourseLibrary() {
       // Handle both response formats: { success, courses } or { courses }
       const coursesData = response.courses || (response.success && response.courses) || []
       
-      if (coursesData.length > 0) {
-        console.log('Number of courses fetched:', coursesData.length)
-        // Map _id to id for UI consistency
-        const mappedCourses = coursesData.map((course: any) => ({
-          ...course,
-          id: course._id || course.id,
-        }))
-        console.log('Mapped courses:', mappedCourses)
-        setCourses(mappedCourses)
-      } else {
-        console.log('No courses from API, using mock courses')
-        setCourses(mockCourses)
-      }
+      console.log('Number of courses fetched:', coursesData.length)
+      // Map _id to id for UI consistency
+      const mappedCourses = coursesData.map((course: any) => ({
+        ...course,
+        id: course._id || course.id,
+      }))
+      console.log('Mapped courses:', mappedCourses)
+      setCourses(mappedCourses)
     } catch (error) {
       console.error('Error fetching courses:', error)
-      console.log('API error or timeout, using mock courses')
-      setCourses(mockCourses)
+      console.log('API error, no courses to display')
+      setCourses([])
     } finally {
       setLoading(false)
     }
@@ -310,43 +250,24 @@ export function CourseLibrary() {
       console.log('Creating course with data:', courseData)
       console.log('Admin token:', adminToken ? 'Present' : 'Missing')
 
-      try {
-        // Try API call first
-        const apiClient = createFrontAPIClient(adminToken || '')
-        const response = await apiClient.post('/api/courses', courseData) as any
+      const apiClient = createFrontAPIClient(adminToken || '')
+      const response = await apiClient.post('/api/courses', courseData) as any
 
-        console.log('API Response:', response)
+      console.log('API Response:', response)
 
-        // API returns the created course directly or { success, course }
-        if (response && (response._id || response.id || response.success)) {
-          alert('Course created successfully!')
-          setShowCreateCourseDialog(false)
-          fetchCourses()
-          resetForm()
-          return
-        }
-      } catch (apiError) {
-        console.log('API not available, creating course locally:', apiError)
+      // API returns the created course directly or { success, course }
+      if (response && (response._id || response.id || response.success)) {
+        alert('Course created successfully!')
+        setShowCreateCourseDialog(false)
+        fetchCourses()
+        resetForm()
+      } else {
+        throw new Error('Failed to create course - invalid response')
       }
-
-      // Fallback: Create course locally if API fails
-      const newCourse: Course = {
-        id: Date.now().toString(),
-        ...courseData,
-        instructor: { name: 'Admin' },
-        rating: 0,
-        enrollmentCount: 0,
-        lessons: 0,
-      }
-
-      setCourses([newCourse, ...courses])
-      alert('Course created successfully! (Note: This is stored locally only)')
-      setShowCreateCourseDialog(false)
-      resetForm()
 
     } catch (error: any) {
       console.error('Error creating course:', error)
-      alert('Error creating course: ' + error.message)
+      alert('Error creating course: ' + (error.message || 'Please check your connection and try again'))
     }
   }
 
@@ -384,34 +305,21 @@ export function CourseLibrary() {
         thumbnail: thumbnailPreview || editingCourse.thumbnail || '/placeholder.svg',
       }
 
-      try {
-        // Try API call first
-        const apiClient = createFrontAPIClient(adminToken || '')
-        const response = await apiClient.put(`/api/courses/${editingCourse.id || editingCourse._id}`, courseData) as any
+      const apiClient = createFrontAPIClient(adminToken || '')
+      const response = await apiClient.put(`/api/courses/${editingCourse.id || editingCourse._id}`, courseData) as any
 
-        if (response && (response.success || response._id || response.id)) {
-          setShowCreateCourseDialog(false)
-          resetForm()
-          fetchCourses()
-          return
-        }
-      } catch (apiError) {
-        console.log('API not available, updating course locally:', apiError)
+      if (response && (response.success || response._id || response.id)) {
+        alert('Course updated successfully!')
+        setShowCreateCourseDialog(false)
+        resetForm()
+        fetchCourses()
+      } else {
+        throw new Error('Failed to update course - invalid response')
       }
-
-      // Fallback: Update course locally
-      setCourses(courses.map(c => 
-        (c.id === editingCourse.id || c._id === editingCourse._id) 
-          ? { ...c, ...courseData }
-          : c
-      ))
-      alert('Course updated successfully! (Note: This is stored locally only)')
-      setShowCreateCourseDialog(false)
-      resetForm()
 
     } catch (error: any) {
       console.error('Error updating course:', error)
-      alert('Error updating course: ' + error.message)
+      alert('Error updating course: ' + (error.message || 'Please check your connection and try again'))
     }
   }
 
@@ -452,35 +360,19 @@ export function CourseLibrary() {
         thumbnail: course.thumbnail,
       }
 
-      try {
-        // Try API call first
-        const apiClient = createFrontAPIClient(adminToken || '')
-        const response = await apiClient.post('/api/courses', courseData) as any
+      const apiClient = createFrontAPIClient(adminToken || '')
+      const response = await apiClient.post('/api/courses', courseData) as any
 
-        if (response && (response.success || response._id || response.id)) {
-          fetchCourses()
-          return
-        }
-      } catch (apiError) {
-        console.log('API not available, duplicating course locally:', apiError)
+      if (response && (response.success || response._id || response.id)) {
+        alert('Course duplicated successfully!')
+        fetchCourses()
+      } else {
+        throw new Error('Failed to duplicate course - invalid response')
       }
-
-      // Fallback: Duplicate course locally
-      const newCourse: Course = {
-        id: Date.now().toString(),
-        ...courseData,
-        instructor: course.instructor,
-        rating: 0,
-        enrollmentCount: 0,
-        lessons: course.lessons || 0,
-      }
-
-      setCourses([newCourse, ...courses])
-      alert('Course duplicated successfully! (Note: This is stored locally only)')
 
     } catch (error: any) {
       console.error('Error duplicating course:', error)
-      alert('Error duplicating course: ' + error.message)
+      alert('Error duplicating course: ' + (error.message || 'Please check your connection and try again'))
     }
   }
 
@@ -490,26 +382,17 @@ export function CourseLibrary() {
     }
 
     try {
-      try {
-        // Try API call first
-        const apiClient = createFrontAPIClient(adminToken || '')
-        const response = await apiClient.delete(`/api/courses/${course.id || course._id}`) as any
+      const apiClient = createFrontAPIClient(adminToken || '')
+      const response = await apiClient.delete(`/api/courses/${course.id || course._id}`) as any
 
-        if (response && (response.success || response.message)) {
-          fetchCourses()
-          return
-        }
-      } catch (apiError) {
-        console.log('API not available, deleting course locally:', apiError)
+      if (response && (response.success || response.message)) {
+        fetchCourses()
+      } else {
+        throw new Error('Failed to delete course - invalid response')
       }
-
-      // Fallback: Delete course locally
-      setCourses(courses.filter(c => c.id !== course.id && c._id !== course._id))
-      alert('Course deleted successfully! (Note: This is local only)')
-
     } catch (error: any) {
       console.error('Error deleting course:', error)
-      alert('Error deleting course: ' + error.message)
+      alert('Error deleting course: ' + (error.message || 'Please check your connection and try again'))
     }
   }
 
