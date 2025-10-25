@@ -67,13 +67,15 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-4">
             {user ? (
               <>
-                <Link
-                  href="/dashboard"
+                <a
+                  href={process.env.NODE_ENV === 'production' 
+                    ? 'https://app.techmigo.co.uk' 
+                    : 'http://localhost:3004'}
                   className="flex items-center gap-2 px-4 py-2 border border-[#f59e0b] text-[#f59e0b] rounded-lg hover:bg-[#f59e0b]/10 transition-all duration-300"
                 >
                   <User size={18} />
                   <span>{user.name}</span>
-                </Link>
+                </a>
                 <button
                   onClick={logout}
                   className="flex items-center gap-2 px-4 py-2 bg-[#f59e0b] text-[#0a1f44] font-semibold rounded-lg hover:bg-[#fbbf24] transition-all duration-300"
@@ -123,14 +125,16 @@ export default function Header() {
               <div className="flex flex-col gap-2 mt-4">
                 {user ? (
                   <>
-                    <Link
-                      href="/dashboard"
+                    <a
+                      href={process.env.NODE_ENV === 'production' 
+                        ? 'https://app.techmigo.co.uk' 
+                        : 'http://localhost:3004'}
                       className="flex items-center justify-center gap-2 px-4 py-2 border border-[#f59e0b] text-[#f59e0b] rounded-lg"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <User size={18} />
                       <span>{user.name}</span>
-                    </Link>
+                    </a>
                     <button
                       onClick={() => {
                         setIsMobileMenuOpen(false)
