@@ -129,12 +129,15 @@ export function CourseLibrary() {
   const projectTitleRef = useRef<HTMLInputElement>(null)
   const projectDescriptionRef = useRef<HTMLTextAreaElement>(null)
   const thumbnailRef = useRef<HTMLInputElement>(null)
+  const projectMediaRef = useRef<HTMLInputElement>(null)
   const [selectedCategory, setSelectedCategory] = useState("Frontend Development")
   const [selectedLevel, setSelectedLevel] = useState<"beginner" | "intermediate" | "advanced">("beginner")
   const [selectedStatus, setSelectedStatus] = useState<"draft" | "published" | "archived">("draft")
   const [selectedAccessType, setSelectedAccessType] = useState<"Free" | "Premium">("Free")
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("")
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false)
+  const [projectMediaPreview, setProjectMediaPreview] = useState<string>("")
+  const [uploadingProjectMedia, setUploadingProjectMedia] = useState(false)
 
   // Fetch courses on mount
   useEffect(() => {
@@ -232,6 +235,57 @@ export function CourseLibrary() {
     }
   }
 
+  const handleProjectMediaChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type (images or videos)
+    const isImage = file.type.startsWith('image/')
+    const isVideo = file.type.startsWith('video/')
+    
+    if (!isImage && !isVideo) {
+      alert('Please select an image or video file')
+      return
+    }
+
+    // Validate file size (max 50MB for videos, 5MB for images)
+    const maxSize = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      alert(`File size should be less than ${isVideo ? '50MB' : '5MB'}`)
+      return
+    }
+
+    try {
+      setUploadingProjectMedia(true)
+      
+      // Create form data
+      const formData = new FormData()
+      formData.append('file', file)
+
+      // Upload to API
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${adminToken}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.url) {
+        setProjectMediaPreview(data.url)
+      } else {
+        alert('Failed to upload file')
+      }
+    } catch (error) {
+      console.error('Error uploading project media:', error)
+      alert('Error uploading file')
+    } finally {
+      setUploadingProjectMedia(false)
+    }
+  }
+
   const handleCreateCourse = async (): Promise<void> => {
     try {
       if (!titleRef.current?.value || !descriptionRef.current?.value) {
@@ -249,6 +303,7 @@ export function CourseLibrary() {
         duration: 0,
         projectTitle: projectTitleRef.current?.value || undefined,
         projectDescription: projectDescriptionRef.current?.value || undefined,
+        projectMedia: projectMediaPreview || undefined,
         thumbnail: thumbnailPreview || '/placeholder.svg',
       }
 
@@ -301,10 +356,12 @@ export function CourseLibrary() {
     if (projectTitleRef.current) projectTitleRef.current.value = ''
     if (projectDescriptionRef.current) projectDescriptionRef.current.value = ''
     if (thumbnailRef.current) thumbnailRef.current.value = ''
+    if (projectMediaRef.current) projectMediaRef.current.value = ''
     setSelectedLevel('beginner')
     setSelectedStatus('draft')
     setSelectedAccessType('Free')
     setThumbnailPreview('')
+    setProjectMediaPreview('')
     setEditingCourse(null)
   }
 
@@ -886,10 +943,30 @@ export function CourseLibrary() {
               />
               <div className="mt-2">
                 <Label className="text-gray-300 text-sm">Project Image/Video</Label>
+                {projectMediaPreview && (
+                  <div className="mt-2">
+                    {projectMediaPreview.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                      <img 
+                        src={projectMediaPreview} 
+                        alt="Project media preview" 
+                        className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-700"
+                      />
+                    ) : (
+                      <video 
+                        src={projectMediaPreview} 
+                        className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-700"
+                        controls
+                      />
+                    )}
+                  </div>
+                )}
                 <input
+                  ref={projectMediaRef}
                   type="file"
                   id="project-media-upload"
                   accept="image/*,video/*"
+                  onChange={handleProjectMediaChange}
+                  disabled={uploadingProjectMedia}
                   className="hidden"
                 />
                 <Button
@@ -897,11 +974,12 @@ export function CourseLibrary() {
                   variant="outline"
                   className="mt-1 border-gray-700 text-gray-300 bg-transparent hover:bg-gray-700 cursor-pointer transition-all"
                   onClick={() => document.getElementById("project-media-upload")?.click()}
+                  disabled={uploadingProjectMedia}
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  Click to Select File
+                  {uploadingProjectMedia ? 'Uploading...' : 'Click to Select File'}
                 </Button>
-                <p className="text-xs text-gray-500 mt-1">Image or video for the project</p>
+                <p className="text-xs text-gray-500 mt-1">Image (5MB) or video (50MB) for the project</p>
               </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
