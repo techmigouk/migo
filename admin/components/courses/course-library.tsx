@@ -113,7 +113,7 @@ const mockCourses: Course[] = [
 export function CourseLibrary() {
   const { adminToken } = useAdminAuth()
   const [courses, setCourses] = useState<Course[]>(mockCourses)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
@@ -148,8 +148,15 @@ export function CourseLibrary() {
       console.log('Fetching courses...')
       console.log('Admin token:', adminToken ? 'Present' : 'Missing')
       
+      // Set a timeout to prevent long waits
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 2000)
+      )
+      
       const apiClient = createFrontAPIClient(adminToken || '')
-      const response = await apiClient.get('/api/courses?status=all') as any
+      const fetchPromise = apiClient.get('/api/courses?status=all')
+      
+      const response = await Promise.race([fetchPromise, timeoutPromise]) as any
       
       console.log('Fetch courses response:', response)
       
@@ -168,7 +175,7 @@ export function CourseLibrary() {
       }
     } catch (error) {
       console.error('Error fetching courses:', error)
-      console.log('API error, using mock courses')
+      console.log('API error or timeout, using mock courses')
       setCourses(mockCourses)
     } finally {
       setLoading(false)
