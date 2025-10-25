@@ -44,13 +44,19 @@ export async function POST(request: NextRequest) {
   try {
     await db.connect();
     const body = await request.json();
+    
+    console.log('Creating course with data:', body);
+    
     const course = new CourseModel(body);
     await course.save();
     
+    console.log('Course created successfully:', course._id);
+    
     return NextResponse.json({ success: true, course }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Error creating course:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create course' },
+      { success: false, error: error.message || 'Failed to create course' },
       { status: 500 }
     );
   }

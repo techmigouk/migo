@@ -255,17 +255,18 @@ export function CourseLibrary() {
         body: JSON.stringify(courseData),
       })
 
+      console.log('Response status:', response.status)
       const data = await response.json()
       console.log('API Response:', data)
 
-      // API returns the created course directly or { success, course }
-      if (data && (data._id || data.id || data.success)) {
+      // API returns { success: true, course }
+      if (response.ok && data && (data.success || data.course)) {
         alert('Course created successfully!')
         setShowCreateCourseDialog(false)
         fetchCourses()
         resetForm()
       } else {
-        throw new Error('Failed to create course - invalid response')
+        throw new Error(data.error || 'Failed to create course - invalid response')
       }
 
     } catch (error: any) {
