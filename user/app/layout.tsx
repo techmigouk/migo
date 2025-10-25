@@ -9,7 +9,6 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: 'TechMigo - Your Learning Dashboard',
   description: 'Master tech skills with interactive courses, real-world projects, and industry-recognized certifications',
-  generator: 'TechMigo',
   icons: {
     icon: [
       { url: '/logos/logo.ico' },
