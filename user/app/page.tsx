@@ -4803,89 +4803,131 @@ export default function UserDashboard() {
     }
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4 overflow-y-auto">
-        <div className="bg-gray-900 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-3xl font-bold text-white">Choose Your Learning Path</h2>
-                <p className="text-gray-400 mt-2">Start free, upgrade when you're ready</p>
+      <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[100] overflow-y-auto">
+        <div className="min-h-screen flex items-start justify-center p-4 py-8">
+          <div className="bg-gray-800 rounded-xl w-full max-w-7xl my-8 border border-gray-700 shadow-2xl relative">
+            {/* Close Button - Top Right */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowPricingModal(false)}
+              className="absolute top-3 right-3 z-10 text-white hover:bg-white/10 bg-black/40 rounded-full"
+            >
+              <X size={20} />
+            </Button>
+
+            {/* Header */}
+            <div className="p-6 md:p-8 border-b border-gray-700">
+              <div className="text-center">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                  Choose Your Learning Path
+                </h2>
+                <p className="text-gray-400 text-base md:text-lg">
+                  Start free, upgrade when you're ready to unlock your full potential
+                </p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowPricingModal(false)}
-                className="text-gray-400 hover:text-white"
-              >
-                <X size={24} />
-              </Button>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {plans.map((plan, index) => (
-                <Card
-                  key={index}
-                  className={`bg-gray-800 border-gray-700 ${
-                    plan.highlighted ? "ring-2 ring-amber-500 scale-105" : ""
-                  } transition-all duration-300`}
-                >
-                  <CardContent className="p-6">
+            {/* Pricing Cards */}
+            <div className="p-6 md:p-8">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {plans.map((plan, index) => (
+                  <div
+                    key={index}
+                    className={`bg-gray-900/50 border rounded-xl p-6 transition-all duration-300 ${
+                      plan.highlighted 
+                        ? "border-amber-500 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/20 scale-105" 
+                        : "border-gray-700 hover:border-gray-600"
+                    }`}
+                  >
+                    {/* Badge */}
                     {plan.badge && (
-                      <Badge className="bg-amber-500 text-gray-900 mb-3">{plan.badge}</Badge>
+                      <div className="mb-4">
+                        <Badge className="bg-amber-500 text-gray-900 font-semibold">
+                          {plan.badge}
+                        </Badge>
+                      </div>
                     )}
-                    <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+
+                    {/* Plan Name */}
+                    <h3 className="text-2xl font-bold text-white mb-3">{plan.name}</h3>
+
+                    {/* Price */}
                     <div className="mb-4">
-                      <span className="text-3xl font-bold text-amber-500">{plan.price}</span>
-                      <span className="text-gray-400 text-sm ml-2">/ {plan.period}</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-bold text-amber-500">{plan.price}</span>
+                        <span className="text-gray-400 text-sm">/ {plan.period}</span>
+                      </div>
                     </div>
-                    <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
+
+                    {/* Description */}
+                    <p className="text-gray-400 text-sm mb-6 min-h-[60px]">
+                      {plan.description}
+                    </p>
                     
+                    {/* CTA Button */}
                     {plan.isCurrent ? (
                       <Button
                         disabled
-                        className="w-full mb-6 bg-gray-700 text-gray-400 cursor-not-allowed"
+                        className="w-full mb-6 bg-gray-700 text-gray-400 cursor-not-allowed py-6"
                       >
+                        <CheckCircle className="mr-2" size={18} />
                         Current Plan
                       </Button>
                     ) : plan.priceId ? (
                       <Button
                         onClick={() => handleSubscribeFromModal(plan.name, plan.priceId!)}
                         disabled={pricingLoading === plan.name}
-                        className={`w-full mb-6 ${
+                        className={`w-full mb-6 py-6 font-semibold text-base transition-all ${
                           plan.highlighted
-                            ? "bg-amber-500 hover:bg-amber-600 text-gray-900"
+                            ? "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 shadow-lg hover:shadow-amber-500/50"
                             : "bg-gray-700 hover:bg-gray-600 text-white"
                         }`}
                       >
                         {pricingLoading === plan.name ? (
                           <>
-                            <Loader2 className="mr-2 animate-spin" size={16} />
+                            <Loader2 className="mr-2 animate-spin" size={18} />
                             Loading...
                           </>
                         ) : (
-                          plan.cta
+                          <>
+                            <Crown className="mr-2" size={18} />
+                            {plan.cta}
+                          </>
                         )}
                       </Button>
                     ) : (
                       <Button
                         disabled
-                        className="w-full mb-6 bg-gray-700 text-gray-400 cursor-not-allowed"
+                        className="w-full mb-6 bg-gray-700 text-gray-400 cursor-not-allowed py-6"
                       >
                         {plan.cta}
                       </Button>
                     )}
 
-                    <ul className="space-y-2">
+                    {/* Features List */}
+                    <ul className="space-y-3">
                       {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start gap-2">
-                          <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={16} />
+                        <li key={featureIndex} className="flex items-start gap-3">
+                          <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={18} />
                           <span className="text-gray-300 text-sm">{feature}</span>
                         </li>
                       ))}
                     </ul>
-                  </CardContent>
-                </Card>
-              ))}
+                  </div>
+                ))}
+              </div>
+
+              {/* Money Back Guarantee */}
+              <div className="mt-8 p-6 bg-gray-900/50 border border-gray-700 rounded-lg text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Shield className="text-amber-500" size={24} />
+                  <h4 className="text-white font-semibold text-lg">30-Day Money-Back Guarantee</h4>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Not satisfied? Get a full refund within 30 days, no questions asked.
+                </p>
+              </div>
             </div>
           </div>
         </div>
