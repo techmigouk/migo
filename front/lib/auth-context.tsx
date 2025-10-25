@@ -52,7 +52,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Save the user data and token
-    setUser(data.user)
     localStorage.setItem("token", data.token)
     localStorage.setItem("user", JSON.stringify(data.user))
     
@@ -66,7 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('NODE_ENV:', process.env.NODE_ENV)
     console.log('NEXT_PUBLIC_USER_DASHBOARD_URL:', process.env.NEXT_PUBLIC_USER_DASHBOARD_URL)
     
-    window.location.href = userDashboardUrl
+    // Use replace instead of href to prevent back button issues
+    window.location.replace(userDashboardUrl)
   }
 
   const logout = () => {
