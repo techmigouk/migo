@@ -90,7 +90,7 @@ export const createFrontAPIClient = (token?: string) => {
 
 export const createUserAPIClient = (token?: string) => {
   return new APIClient({
-    baseURL: process.env.NEXT_PUBLIC_USER_API_URL || 'http://localhost:3004',
+    baseURL: process.env.NEXT_PUBLIC_USER_API_URL || 'http://localhost:3002',
     token,
   });
 };
