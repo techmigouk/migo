@@ -96,15 +96,8 @@ export function CourseLibrary() {
       console.log('Fetching courses...')
       console.log('Admin token:', adminToken ? 'Present' : 'Missing')
       
-      // Set a timeout to prevent long waits
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 5000)
-      )
-      
       const apiClient = createFrontAPIClient(adminToken || '')
-      const fetchPromise = apiClient.get('/api/courses?status=all')
-      
-      const response = await Promise.race([fetchPromise, timeoutPromise]) as any
+      const response = await apiClient.get('/api/courses?status=all') as any
       
       console.log('Fetch courses response:', response)
       
