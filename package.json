@@ -16,5 +16,8 @@
     "front",
     "user"
   ],
-  "packageManager": "pnpm@10.18.3"
+  "packageManager": "pnpm@10.18.3",
+  "dependencies": {
+    "minimist": "^1.2.8"
+  }
 }

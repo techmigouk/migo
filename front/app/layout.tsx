@@ -11,7 +11,13 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Techmigo - Learn Tech. Build Real Projects. Launch Your Career.",
   description: "Master tech skills through practical video lessons paired with real-world projects and mentorship.",
-    generator: 'v0.app'
+  generator: 'v0.app',
+  icons: {
+    icon: [
+      { url: '/logos/logo.ico' },
+      { url: '/logos/logo.png', type: 'image/png' }
+    ]
+  }
 }
 
 export default function RootLayout({

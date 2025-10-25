@@ -10,6 +10,12 @@ export const metadata: Metadata = {
   title: 'TechMigo - Your Learning Dashboard',
   description: 'Master tech skills with interactive courses, real-world projects, and industry-recognized certifications',
   generator: 'TechMigo',
+  icons: {
+    icon: [
+      { url: '/logos/logo.ico' },
+      { url: '/logos/logo.png', type: 'image/png' }
+    ]
+  }
 }
 
 export default function RootLayout({

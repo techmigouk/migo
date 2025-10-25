@@ -10,6 +10,12 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: 'TechMigo Admin Dashboard',
   description: 'Admin dashboard for TechMigo',
+  icons: {
+    icon: [
+      { url: '/logos/logo.ico' },
+      { url: '/logos/logo.png', type: 'image/png' }
+    ]
+  }
 }
 
 export default function RootLayout({
