@@ -509,8 +509,9 @@ export default function UserDashboard() {
     const urlParams = new URLSearchParams(window.location.search)
     const tokenParam = urlParams.get('token')
     
-    // If token in URL, we're being redirected from login - let the other useEffect handle it
+    // If token in URL, we're being redirected from login - allow access
     if (tokenParam) {
+      console.log("✅ Token found in URL - allowing access")
       return
     }
     
@@ -518,8 +519,12 @@ export default function UserDashboard() {
     const token = localStorage.getItem("token")
     const user = localStorage.getItem("user")
     
+    console.log("🔍 Auth check:", { hasToken: !!token, hasUser: !!user })
+    
     // If no token or user, redirect to login page
-    if (!token && !user) {
+    if (!token || !user) {
+      console.log("❌ No authentication found - redirecting to login")
+      
       // Use production URL in production, localhost in development
       const loginUrl = process.env.NODE_ENV === 'production' 
         ? 'https://techmigo.co.uk/login'
@@ -528,6 +533,8 @@ export default function UserDashboard() {
       window.location.href = loginUrl
       return
     }
+    
+    console.log("✅ Authentication found - staying on dashboard")
   }, [])
 
   // Detect mobile viewport
