@@ -500,6 +500,8 @@ export default function UserDashboard() {
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [profileComplete, setProfileComplete] = useState(true)
   const [currentUser, setCurrentUser] = useState<any>(null)
+  const [showPricingModal, setShowPricingModal] = useState(false)
+  const [pricingLoading, setPricingLoading] = useState<string | null>(null)
 
   // Check authentication on mount - redirect to login if not authenticated
   useEffect(() => {
@@ -682,17 +684,35 @@ export default function UserDashboard() {
         const data = await response.json()
         
         if (data.success && data.courses) {
-          const mappedCourses: ICourse[] = data.courses.map((apiCourse: any) => ({
-            courseId: apiCourse._id || apiCourse.id,
-            title: apiCourse.title,
-            category: apiCourse.category as any,
-            instructor: typeof apiCourse.instructor === 'string' ? apiCourse.instructor : apiCourse.instructor?.name || 'Unknown',
-            status: 'preview' as const,
-            progressPercentage: 0,
-            hasCertificate: true,
-            imageUrl: apiCourse.thumbnail || apiCourse.thumbnailUrl || '/placeholder.svg',
-            lessonsLeft: apiCourse.lessons || 0,
-          }))
+          const mappedCourses: ICourse[] = data.courses.map((apiCourse: any) => {
+            // Determine course status based on price and user subscription
+            const isFree = apiCourse.price === 0 || apiCourse.price === null
+            const isUserPro = userStats.subscriptionTier === 'Pro'
+            
+            let courseStatus: 'enrolled' | 'preview' | 'completed' | 'locked'
+            if (isFree) {
+              // Free courses are always available to preview/enroll
+              courseStatus = 'preview'
+            } else if (isUserPro) {
+              // Pro users can access all paid courses
+              courseStatus = 'preview'
+            } else {
+              // Free users need to upgrade for paid courses
+              courseStatus = 'locked'
+            }
+            
+            return {
+              courseId: apiCourse._id || apiCourse.id,
+              title: apiCourse.title,
+              category: apiCourse.category as any,
+              instructor: typeof apiCourse.instructor === 'string' ? apiCourse.instructor : apiCourse.instructor?.name || 'Unknown',
+              status: courseStatus,
+              progressPercentage: 0,
+              hasCertificate: true,
+              imageUrl: apiCourse.thumbnail || apiCourse.thumbnailUrl || '/placeholder.svg',
+              lessonsLeft: apiCourse.lessons || 0,
+            }
+          })
           setCourses(mappedCourses)
         }
       } catch (error) {
@@ -704,7 +724,7 @@ export default function UserDashboard() {
     }
 
     fetchCourses()
-  }, [])
+  }, [userStats.subscriptionTier])
 
   // Fetch user notifications
   useEffect(() => {
@@ -1127,7 +1147,7 @@ export default function UserDashboard() {
             <Button
               className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold shadow-lg shadow-amber-500/50"
               onClick={() => {
-                setActiveScreen("settings")
+                setShowPricingModal(true)
                 if (isMobile) setIsMobileMenuOpen(false)
               }}
             >
@@ -1247,7 +1267,7 @@ export default function UserDashboard() {
           {!isPro && (
             <Button
               className="bg-amber-500 hover:bg-amber-600 text-gray-900 font-semibold"
-              onClick={() => setActiveScreen("settings")}
+              onClick={() => setShowPricingModal(true)}
             >
               <Crown className="mr-2" size={16} />
               Upgrade Now
@@ -1292,7 +1312,7 @@ export default function UserDashboard() {
             {!isPro && (
               <Button
                 className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold shadow-lg shadow-amber-500/50"
-                onClick={() => setActiveScreen("settings")}
+                onClick={() => setShowPricingModal(true)}
               >
                 <Crown className="mr-2" size={18} />
                 Upgrade to Pro
@@ -1681,22 +1701,22 @@ export default function UserDashboard() {
                   <Button
                     className="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-semibold"
                     onClick={() => {
-                      if (!checkProfileComplete('enroll in this course')) return
-                      setActiveScreen("settings")
+                      if (!checkProfileComplete('start this course')) return
+                      setActiveScreen("course-player")
                     }}
                   >
-                    <Crown className="mr-2" size={16} />
-                    Upgrade to Unlock
+                    <Play className="mr-2" size={16} />
+                    Start Course
                   </Button>
                 )}
 
                 {course.status === "locked" && (
                   <Button
                     className="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-semibold"
-                    onClick={() => setActiveScreen("settings")}
+                    onClick={() => setShowPricingModal(true)}
                   >
-                    <Lock className="mr-2" size={16} />
-                    Upgrade to Unlock Full Catalog
+                    <Crown className="mr-2" size={16} />
+                    Upgrade to Unlock
                   </Button>
                 )}
 
@@ -4493,12 +4513,219 @@ export default function UserDashboard() {
     )
   }
 
+  // Pricing Modal Component
+  const PricingModal = () => {
+    const plans = [
+      {
+        name: "Free",
+        price: "$0",
+        period: "forever",
+        description: "Perfect for exploring and getting started with basic learning",
+        features: [
+          "Access to 5 free courses",
+          "Basic project templates",
+          "Community forum access",
+          "Course completion certificates",
+        ],
+        cta: "Current Plan",
+        highlighted: false,
+        priceId: null,
+        isCurrent: !isPro,
+      },
+      {
+        name: "Monthly",
+        price: "$24.99",
+        period: "per month",
+        description: "For learners who want flexibility with month-to-month access",
+        features: [
+          "Full course library access",
+          "Unlimited projects",
+          "Verified certificates",
+          "Mentor access",
+          "Priority support",
+          "Cancel anytime",
+        ],
+        cta: "Start Monthly",
+        highlighted: false,
+        priceId: process.env.NEXT_PUBLIC_STRIPE_BASIC_PRICE_ID || "price_1SLGCAJZuJlFWRBhESjwJ5ik",
+        isCurrent: false,
+      },
+      {
+        name: "Annual",
+        price: "$249.90",
+        period: "per year",
+        description: "Best value! Serious learners save 16% with annual commitment",
+        features: [
+          "Everything in Monthly",
+          "Save $49.98 per year",
+          "Priority support",
+          "Exclusive workshops",
+          "Early access to new content",
+          "Career guidance",
+          "1-on-1 mentorship sessions",
+        ],
+        cta: "Get Annual Plan",
+        highlighted: true,
+        priceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID || "price_1SLGCAJZuJlFWRBhXv7LEw3Q",
+        badge: "🔥 MOST POPULAR",
+        isCurrent: false,
+      },
+      {
+        name: "Lifetime",
+        price: "$899.64",
+        period: "one-time payment",
+        description: "One-time payment for unlimited lifetime access - never pay again!",
+        features: [
+          "Everything in Annual",
+          "Lifetime access to all courses",
+          "All future courses included",
+          "Lifetime updates",
+          "VIP community access",
+          "White-glove onboarding",
+          "Dedicated account manager",
+        ],
+        cta: "Get Lifetime Access",
+        highlighted: false,
+        priceId: "price_lifetime_plan",
+        badge: "💎 BEST DEAL",
+        isCurrent: false,
+      },
+    ]
+
+    const handleSubscribeFromModal = async (planName: string, priceId: string) => {
+      if (!priceId) return
+      
+      setPricingLoading(planName)
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          alert('Please login to subscribe')
+          setPricingLoading(null)
+          return
+        }
+
+        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/stripe/create-subscription-checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ priceId }),
+        })
+
+        const data = await response.json()
+        
+        if (data.url) {
+          window.location.href = data.url
+        } else {
+          alert('Failed to create checkout session. Please try again.')
+          setPricingLoading(null)
+        }
+      } catch (error) {
+        console.error('Error creating checkout session:', error)
+        alert('An error occurred. Please try again.')
+        setPricingLoading(null)
+      }
+    }
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div className="bg-gray-900 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-3xl font-bold text-white">Choose Your Learning Path</h2>
+                <p className="text-gray-400 mt-2">Start free, upgrade when you're ready</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowPricingModal(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <X size={24} />
+              </Button>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {plans.map((plan, index) => (
+                <Card
+                  key={index}
+                  className={`bg-gray-800 border-gray-700 ${
+                    plan.highlighted ? "ring-2 ring-amber-500 scale-105" : ""
+                  } transition-all duration-300`}
+                >
+                  <CardContent className="p-6">
+                    {plan.badge && (
+                      <Badge className="bg-amber-500 text-gray-900 mb-3">{plan.badge}</Badge>
+                    )}
+                    <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+                    <div className="mb-4">
+                      <span className="text-3xl font-bold text-amber-500">{plan.price}</span>
+                      <span className="text-gray-400 text-sm ml-2">/ {plan.period}</span>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
+                    
+                    {plan.isCurrent ? (
+                      <Button
+                        disabled
+                        className="w-full mb-6 bg-gray-700 text-gray-400 cursor-not-allowed"
+                      >
+                        Current Plan
+                      </Button>
+                    ) : plan.priceId ? (
+                      <Button
+                        onClick={() => handleSubscribeFromModal(plan.name, plan.priceId!)}
+                        disabled={pricingLoading === plan.name}
+                        className={`w-full mb-6 ${
+                          plan.highlighted
+                            ? "bg-amber-500 hover:bg-amber-600 text-gray-900"
+                            : "bg-gray-700 hover:bg-gray-600 text-white"
+                        }`}
+                      >
+                        {pricingLoading === plan.name ? (
+                          <>
+                            <Loader2 className="mr-2 animate-spin" size={16} />
+                            Loading...
+                          </>
+                        ) : (
+                          plan.cta
+                        )}
+                      </Button>
+                    ) : (
+                      <Button
+                        disabled
+                        className="w-full mb-6 bg-gray-700 text-gray-400 cursor-not-allowed"
+                      >
+                        {plan.cta}
+                      </Button>
+                    )}
+
+                    <ul className="space-y-2">
+                      {plan.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-start gap-2">
+                          <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={16} />
+                          <span className="text-gray-300 text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Profile Completion Modal Component
   const ProfileCompletionModal = () => {
     const [formData, setFormData] = useState({
       name: currentUser?.name || '',
       avatar: currentUser?.avatar || '',
       phone: currentUser?.phone || '',
+      countryCode: '+1',
       bio: currentUser?.bio || '',
       country: currentUser?.country || '',
       city: currentUser?.city || '',
@@ -4594,7 +4821,14 @@ export default function UserDashboard() {
           },
           body: JSON.stringify({
             userId: currentUser?.id || currentUser?._id,
-            ...formData
+            name: formData.name,
+            avatar: formData.avatar,
+            phone: `${formData.countryCode}${formData.phone}`,
+            bio: formData.bio,
+            country: formData.country,
+            city: formData.city,
+            dateOfBirth: formData.dateOfBirth,
+            learningGoal: formData.learningGoal,
           })
         })
 
@@ -4693,13 +4927,32 @@ export default function UserDashboard() {
               {/* Phone */}
               <div>
                 <Label className="text-white">Phone Number *</Label>
-                <Input
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="bg-gray-700 text-white border-gray-600 mt-1"
-                  placeholder="+1 234 567 8900"
-                  required
-                />
+                <div className="flex gap-2 mt-1">
+                  <Select value={formData.countryCode} onValueChange={(value) => setFormData({ ...formData, countryCode: value })}>
+                    <SelectTrigger className="w-32 bg-gray-700 text-white border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 text-white border-gray-700">
+                      <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                      <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                      <SelectItem value="+234">🇳🇬 +234</SelectItem>
+                      <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                      <SelectItem value="+86">🇨🇳 +86</SelectItem>
+                      <SelectItem value="+81">🇯🇵 +81</SelectItem>
+                      <SelectItem value="+49">🇩🇪 +49</SelectItem>
+                      <SelectItem value="+33">🇫🇷 +33</SelectItem>
+                      <SelectItem value="+61">🇦🇺 +61</SelectItem>
+                      <SelectItem value="+55">🇧🇷 +55</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9]/g, '') })}
+                    className="flex-1 bg-gray-700 text-white border-gray-600"
+                    placeholder="234 567 8900"
+                    required
+                  />
+                </div>
               </div>
 
               {/* Bio */}
@@ -4783,15 +5036,20 @@ export default function UserDashboard() {
                     </>
                   )}
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setActiveScreen("settings")}
-                  className="border-amber-500 text-amber-500 hover:bg-amber-500/10"
-                >
-                  <Crown className="mr-2" size={16} />
-                  Upgrade Account
-                </Button>
+                {!isPro && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowProfileModal(false)
+                      setShowPricingModal(true)
+                    }}
+                    className="border-amber-500 text-amber-500 hover:bg-amber-500/10"
+                  >
+                    <Crown className="mr-2" size={16} />
+                    Upgrade
+                  </Button>
+                )}
               </div>
             </form>
           </div>
@@ -4804,6 +5062,9 @@ export default function UserDashboard() {
     <div className="min-h-screen bg-gray-900">
       {/* Profile Completion Modal */}
       {showProfileModal && <ProfileCompletionModal />}
+      
+      {/* Pricing Modal */}
+      {showPricingModal && <PricingModal />}
       
       <Sidebar />
       
