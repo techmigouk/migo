@@ -305,8 +305,12 @@ export function CourseLibrary() {
         price: selectedAccessType === "Premium" ? 9.99 : 0,
         projectTitle: projectTitleRef.current?.value || undefined,
         projectDescription: projectDescriptionRef.current?.value || undefined,
+        projectMedia: projectMediaPreview || editingCourse.projectMedia || undefined,
         thumbnail: thumbnailPreview || editingCourse.thumbnail || '/placeholder.svg',
       }
+
+      console.log('Updating course:', editingCourse.id || editingCourse._id)
+      console.log('Update data:', courseData)
 
       const response = await fetch(`/api/courses/${editingCourse.id || editingCourse._id}`, {
         method: 'PUT',
@@ -317,15 +321,17 @@ export function CourseLibrary() {
         body: JSON.stringify(courseData),
       })
 
+      console.log('Response status:', response.status)
       const data = await response.json()
+      console.log('Response data:', data)
 
-      if (data && (data.success || data._id || data.id)) {
+      if (response.ok && data && (data.success || data.course)) {
         alert('Course updated successfully!')
         setShowCreateCourseDialog(false)
         resetForm()
         fetchCourses()
       } else {
-        throw new Error('Failed to update course - invalid response')
+        throw new Error(data.error || 'Failed to update course - invalid response')
       }
 
     } catch (error: any) {

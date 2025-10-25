@@ -33,6 +33,10 @@ export async function PUT(
   try {
     await db.connect();
     const body = await request.json();
+    
+    console.log('Updating course:', params.id)
+    console.log('Update data:', body)
+    
     const course = await CourseModel.findByIdAndUpdate(
       params.id,
       body,
@@ -40,16 +44,19 @@ export async function PUT(
     );
     
     if (!course) {
+      console.error('Course not found:', params.id)
       return NextResponse.json(
         { success: false, error: 'Course not found' },
         { status: 404 }
       );
     }
     
+    console.log('Course updated successfully:', course._id)
     return NextResponse.json({ success: true, course });
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Error updating course:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to update course' },
+      { success: false, error: error.message || 'Failed to update course' },
       { status: 500 }
     );
   }
