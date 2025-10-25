@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { put } from '@vercel/blob';
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,37 +38,25 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ File validation passed')
 
-    // Convert file to buffer
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'courses');
-    if (!existsSync(uploadsDir)) {
-      console.log('📁 Creating uploads directory:', uploadsDir)
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
     // Generate unique filename
     const timestamp = Date.now();
     const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const filename = `${timestamp}-${originalName}`;
-    const filepath = join(uploadsDir, filename);
+    const filename = `uploads/${timestamp}-${originalName}`;
 
-    console.log('💾 Saving file to:', filepath)
+    console.log('☁️ Uploading to Vercel Blob:', filename)
 
-    // Save file
-    await writeFile(filepath, buffer);
+    // Upload to Vercel Blob
+    const blob = await put(filename, file, {
+      access: 'public',
+      addRandomSuffix: false,
+    });
 
-    // Return public URL
-    const url = `/uploads/courses/${filename}`;
-
-    console.log('✅ File uploaded successfully:', url)
+    console.log('✅ File uploaded successfully:', blob.url)
 
     return NextResponse.json(
       {
         success: true,
-        url: url,
+        url: blob.url,
         filename: filename,
       },
       {
@@ -103,3 +89,4 @@ export async function OPTIONS() {
     },
   });
 }
+
