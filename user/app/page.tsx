@@ -4528,112 +4528,108 @@ export default function UserDashboard() {
     }
 
     return (
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
-        <div className="min-h-screen flex items-center justify-center p-4">
-          <div className="bg-gray-800 rounded-lg w-full max-w-4xl my-8 border border-gray-700 shadow-2xl">
-            <div className="relative">
-              {/* Course Header Image */}
-              <div className="relative h-48 md:h-64 bg-gradient-to-br from-amber-500/20 to-gray-800 rounded-t-lg overflow-hidden">
-                <img
-                  src={selectedCourse.imageUrl || "/placeholder.svg"}
-                  alt={selectedCourse.title}
-                  className="w-full h-full object-cover opacity-50"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowCoursePreview(false)}
-                  className="absolute top-2 right-2 md:top-4 md:right-4 text-white hover:bg-white/10 bg-black/30"
-                >
-                  <X size={20} className="md:w-6 md:h-6" />
-                </Button>
+      <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[100] overflow-y-auto">
+        <div className="min-h-screen flex items-start justify-center p-4 py-8">
+          <div className="bg-gray-800 rounded-xl w-full max-w-5xl my-8 border border-gray-700 shadow-2xl relative">
+            {/* Close Button - Top Right */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowCoursePreview(false)}
+              className="absolute top-3 right-3 z-10 text-white hover:bg-white/10 bg-black/40 rounded-full"
+            >
+              <X size={20} />
+            </Button>
+
+            {/* Course Header Image */}
+            <div className="relative h-56 md:h-72 bg-gradient-to-br from-amber-500/20 to-gray-800 rounded-t-xl overflow-hidden">
+              <img
+                src={selectedCourse.imageUrl || "/placeholder.svg"}
+                alt={selectedCourse.title}
+                className="w-full h-full object-cover opacity-40"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-800 via-transparent to-transparent"></div>
+              
+              {/* Title Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                <Badge className="bg-amber-500 text-gray-900 mb-2">{selectedCourse.category}</Badge>
+                <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">{selectedCourse.title}</h2>
+                <p className="text-gray-300 text-sm md:text-base">Instructor: {selectedCourse.instructor}</p>
+              </div>
+            </div>
+
+            {/* Course Content */}
+            <div className="p-4 md:p-8">
+              {/* Course Stats */}
+              <div className="grid grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
+                <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-3 md:p-4 text-center">
+                  <Clock className="mx-auto mb-2 text-amber-500" size={24} />
+                  <p className="text-white font-semibold text-sm md:text-base">24 Hours</p>
+                  <p className="text-gray-400 text-xs md:text-sm">Duration</p>
+                </div>
+                <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-3 md:p-4 text-center">
+                  <BookOpen className="mx-auto mb-2 text-amber-500" size={24} />
+                  <p className="text-white font-semibold text-sm md:text-base">{selectedCourse.lessonsLeft || 32} Lessons</p>
+                  <p className="text-gray-400 text-xs md:text-sm">Content</p>
+                </div>
+                <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-3 md:p-4 text-center">
+                  <Award className="mx-auto mb-2 text-amber-500" size={24} />
+                  <p className="text-white font-semibold text-sm md:text-base">Certificate</p>
+                  <p className="text-gray-400 text-xs md:text-sm">Included</p>
+                </div>
               </div>
 
-              {/* Course Content */}
-              <div className="p-4 md:p-6 lg:p-8">
-                {/* Course Title & Meta */}
-                <div className="mb-4 md:mb-6">
-                  <Badge className="bg-amber-500 text-gray-900 mb-2 md:mb-3">{selectedCourse.category}</Badge>
-                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{selectedCourse.title}</h2>
-                  <p className="text-gray-400 text-sm md:text-base">Instructor: {selectedCourse.instructor}</p>
-                </div>
-
-                {/* Course Stats */}
-                <div className="grid grid-cols-3 gap-2 md:gap-4 mb-4 md:mb-6">
-                  <Card className="bg-gray-900 border-gray-700">
-                    <CardContent className="p-3 md:p-4 text-center">
-                      <Clock className="mx-auto mb-1 md:mb-2 text-amber-500" size={20} />
-                      <p className="text-white font-semibold text-sm md:text-base">24 Hours</p>
-                      <p className="text-gray-400 text-xs md:text-sm">Duration</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gray-900 border-gray-700">
-                    <CardContent className="p-3 md:p-4 text-center">
-                      <BookOpen className="mx-auto mb-1 md:mb-2 text-amber-500" size={20} />
-                      <p className="text-white font-semibold text-sm md:text-base">{selectedCourse.lessonsLeft || 32} Lessons</p>
-                      <p className="text-gray-400 text-xs md:text-sm">Content</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gray-900 border-gray-700">
-                    <CardContent className="p-3 md:p-4 text-center">
-                      <Award className="mx-auto mb-1 md:mb-2 text-amber-500" size={20} />
-                      <p className="text-white font-semibold text-sm md:text-base">Certificate</p>
-                      <p className="text-gray-400 text-xs md:text-sm">Included</p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Intro Video */}
-                <div className="mb-4 md:mb-6">
-                  <h3 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3">Course Introduction</h3>
-                  <Card className="bg-gray-900 border-gray-700 overflow-hidden">
-                    <div className="relative bg-black aspect-video flex items-center justify-center">
-                      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent"></div>
-                      <Button
-                        size="lg"
-                        className="bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-full w-16 h-16 md:w-20 md:h-20"
-                      >
-                        <Play size={24} className="md:w-8 md:h-8" />
-                      </Button>
-                      <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 right-2 md:right-4">
-                        <p className="text-white text-xs md:text-sm">Watch Introduction (3:45)</p>
-                      </div>
+              {/* Intro Video */}
+              <div className="mb-6 md:mb-8">
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">Course Introduction</h3>
+                <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+                  <div className="relative bg-black aspect-video flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent"></div>
+                    <Button
+                      size="lg"
+                      className="bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-full w-16 h-16 md:w-20 md:h-20 shadow-lg hover:scale-110 transition-transform"
+                    >
+                      <Play size={24} className="md:w-8 md:h-8" />
+                    </Button>
+                    <div className="absolute bottom-3 md:bottom-4 left-3 md:left-4 right-3 md:right-4">
+                      <p className="text-white text-xs md:text-sm font-medium">Watch Introduction (3:45)</p>
                     </div>
-                  </Card>
+                  </div>
                 </div>
+              </div>
 
+              {/* Two Column Layout for Desktop */}
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
                 {/* Course Description */}
-                <div className="mb-4 md:mb-6">
-                  <h3 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3">What You'll Learn</h3>
-                  <Card className="bg-gray-900 border-gray-700">
-                    <CardContent className="p-4 md:p-6">
-                      <ul className="space-y-2 md:space-y-3">
-                        <li className="flex items-start gap-2 md:gap-3">
-                          <Check className="text-amber-500 flex-shrink-0 mt-0.5 md:mt-1" size={18} />
-                          <span className="text-gray-300 text-sm md:text-base">Master core concepts and advanced techniques</span>
-                        </li>
-                        <li className="flex items-start gap-2 md:gap-3">
-                          <Check className="text-amber-500 flex-shrink-0 mt-0.5 md:mt-1" size={18} />
-                          <span className="text-gray-300 text-sm md:text-base">Build real-world projects from scratch</span>
-                        </li>
-                        <li className="flex items-start gap-2 md:gap-3">
-                          <Check className="text-amber-500 flex-shrink-0 mt-0.5 md:mt-1" size={18} />
-                          <span className="text-gray-300 text-sm md:text-base">Get hands-on experience with industry tools</span>
-                        </li>
-                        <li className="flex items-start gap-2 md:gap-3">
-                          <Check className="text-amber-500 flex-shrink-0 mt-0.5 md:mt-1" size={18} />
-                          <span className="text-gray-300 text-sm md:text-base">Earn a verified certificate upon completion</span>
-                        </li>
-                      </ul>
-                    </CardContent>
-                  </Card>
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">What You'll Learn</h3>
+                  <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 md:p-6">
+                    <ul className="space-y-3">
+                      <li className="flex items-start gap-3">
+                        <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
+                        <span className="text-gray-300 text-sm md:text-base">Master core concepts and advanced techniques</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
+                        <span className="text-gray-300 text-sm md:text-base">Build real-world projects from scratch</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
+                        <span className="text-gray-300 text-sm md:text-base">Get hands-on experience with industry tools</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
+                        <span className="text-gray-300 text-sm md:text-base">Earn a verified certificate upon completion</span>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
 
                 {/* Course Curriculum Preview */}
-                <div className="mb-4 md:mb-6">
-                  <h3 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3">Course Curriculum</h3>
-                  <Card className="bg-gray-900 border-gray-700">
-                    <CardContent className="p-4 md:p-6 space-y-2 md:space-y-3">
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">Course Curriculum</h3>
+                  <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 md:p-6">
+                    <div className="space-y-3">
                       {[
                         { title: "Introduction to Fundamentals", lessons: 8, duration: "2h 15m" },
                         { title: "Core Concepts & Techniques", lessons: 12, duration: "4h 30m" },
@@ -4642,15 +4638,15 @@ export default function UserDashboard() {
                       ].map((module, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between p-2 md:p-3 bg-gray-800 rounded-lg"
+                          className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
                         >
-                          <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 font-bold text-sm md:text-base flex-shrink-0">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 font-bold text-sm flex-shrink-0">
                               {index + 1}
                             </div>
                             <div className="min-w-0 flex-1">
                               <p className="text-white font-semibold text-sm md:text-base truncate">{module.title}</p>
-                              <p className="text-gray-400 text-xs md:text-sm">
+                              <p className="text-gray-400 text-xs">
                                 {module.lessons} lessons • {module.duration}
                               </p>
                             </div>
@@ -4660,23 +4656,25 @@ export default function UserDashboard() {
                           )}
                         </div>
                       ))}
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </div>
+              </div>
 
-                {/* Enroll Button */}
+              {/* Enroll Button - Fixed at Bottom */}
+              <div className="sticky bottom-0 bg-gray-800 pt-4 pb-2 -mx-4 md:-mx-8 px-4 md:px-8 border-t border-gray-700">
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     onClick={handleEnroll}
-                    className="flex-1 bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold text-base md:text-lg py-4 md:py-6"
+                    className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold text-base md:text-lg py-5 md:py-6 shadow-lg hover:shadow-amber-500/50 transition-all"
                   >
-                    <BookOpen className="mr-2" size={18} />
+                    <BookOpen className="mr-2" size={20} />
                     Start Learning Now
                   </Button>
                   <Button
                     onClick={() => setShowCoursePreview(false)}
                     variant="outline"
-                    className="border-gray-700 text-gray-300 hover:bg-gray-700 py-4 md:py-6 sm:w-auto"
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white py-5 md:py-6 sm:w-32"
                   >
                     Cancel
                   </Button>
