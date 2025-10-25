@@ -3,10 +3,7 @@ import { db } from "@/lib/db"
 
 export async function GET() {
   try {
-    // Check the actual value type
     const mongoUri = process.env.MONGODB_URI
-    const mongoUriType = typeof mongoUri
-    const mongoUriValue = mongoUri ? String(mongoUri) : null
     
     const checks = {
       status: "ok",
@@ -14,10 +11,6 @@ export async function GET() {
       environment: process.env.NODE_ENV,
       mongodb: {
         configured: !!mongoUri,
-        valueType: mongoUriType,
-        uri_preview: mongoUriValue 
-          ? `${mongoUriValue.substring(0, 25)}...${mongoUriValue.substring(mongoUriValue.length - 15)}` 
-          : 'NOT SET',
         connected: false,
         error: null as string | null
       },
@@ -34,7 +27,7 @@ export async function GET() {
       checks.mongodb.connected = true
     } catch (error: any) {
       checks.mongodb.connected = false
-      checks.mongodb.error = error.message || error.toString() || 'Unknown error'
+      checks.mongodb.error = "Connection failed"
       checks.status = "error"
       console.error("MongoDB connection error:", error)
     }
@@ -45,7 +38,7 @@ export async function GET() {
     return NextResponse.json(
       {
         status: "error",
-        message: error.message || error.toString(),
+        message: "Health check failed",
         timestamp: new Date().toISOString()
       },
       { status: 500 }
