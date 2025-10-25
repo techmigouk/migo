@@ -193,8 +193,18 @@ export function MediaLibrary() {
             </div>
             <div className="space-y-2">
               <Label className="text-gray-300">File</Label>
-              <div className="flex items-center gap-2">
-                <Input type="file" className="border-gray-700 bg-gray-900 text-gray-100" />
+              <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-amber-500 transition-all cursor-pointer bg-gray-900/50"
+                onClick={() => document.getElementById("media-file-upload")?.click()}
+              >
+                <input 
+                  type="file" 
+                  id="media-file-upload"
+                  className="hidden" 
+                />
+                <Upload className="mx-auto h-12 w-12 text-gray-500 mb-2" />
+                <p className="text-gray-300 font-medium">Click to select file</p>
+                <p className="text-gray-500 text-sm mt-1">or drag and drop here</p>
+                <p className="text-gray-600 text-xs mt-2">Supports images, videos, and documents</p>
               </div>
             </div>
             <div className="space-y-2">

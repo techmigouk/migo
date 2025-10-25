@@ -25,6 +25,7 @@ import {
   Trash2,
   Copy,
   Loader2,
+  Upload,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { createFrontAPIClient } from "@amigo/shared/client"
@@ -707,17 +708,28 @@ export function CourseLibrary() {
                   />
                 </div>
               )}
-              <Input
-                ref={thumbnailRef}
-                type="file"
-                accept="image/*"
-                onChange={handleThumbnailChange}
-                disabled={uploadingThumbnail}
-                className="mt-2 border-gray-700 bg-gray-800 text-gray-100"
-              />
-              {uploadingThumbnail && (
-                <p className="text-sm text-amber-500 mt-1">Uploading image...</p>
-              )}
+              <div className="mt-2">
+                <input
+                  ref={thumbnailRef}
+                  type="file"
+                  id="course-thumbnail-upload"
+                  accept="image/*"
+                  onChange={handleThumbnailChange}
+                  disabled={uploadingThumbnail}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-gray-700 text-gray-300 bg-transparent hover:bg-gray-700 cursor-pointer transition-all"
+                  onClick={() => document.getElementById("course-thumbnail-upload")?.click()}
+                  disabled={uploadingThumbnail}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  {uploadingThumbnail ? 'Uploading...' : 'Click to Select Thumbnail'}
+                </Button>
+                <p className="text-xs text-gray-500 mt-1">Recommended: 1280x720px, JPG or PNG</p>
+              </div>
             </div>
             <div className="space-y-2 rounded-lg border border-gray-700 bg-gray-900 p-4">
               <Label className="text-gray-300">Course Project</Label>
@@ -739,11 +751,22 @@ export function CourseLibrary() {
               />
               <div className="mt-2">
                 <Label className="text-gray-300 text-sm">Project Image/Video</Label>
-                <Input
+                <input
                   type="file"
+                  id="project-media-upload"
                   accept="image/*,video/*"
-                  className="mt-1 border-gray-700 bg-gray-800 text-gray-100"
+                  className="hidden"
                 />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-1 border-gray-700 text-gray-300 bg-transparent hover:bg-gray-700 cursor-pointer transition-all"
+                  onClick={() => document.getElementById("project-media-upload")?.click()}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Click to Select File
+                </Button>
+                <p className="text-xs text-gray-500 mt-1">Image or video for the project</p>
               </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2">

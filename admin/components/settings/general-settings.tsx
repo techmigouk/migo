@@ -46,10 +46,23 @@ export function GeneralSettings() {
               <div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-gray-700 bg-gray-900">
                 <span className="text-2xl font-bold text-amber-600">TM</span>
               </div>
-              <Button variant="outline" className="border-gray-700 text-gray-300 bg-transparent">
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Logo
-              </Button>
+              <div>
+                <input
+                  type="file"
+                  id="logo-upload"
+                  accept="image/*"
+                  className="hidden"
+                />
+                <Button 
+                  variant="outline" 
+                  className="border-gray-700 text-gray-300 bg-transparent hover:bg-gray-700 cursor-pointer transition-all"
+                  onClick={() => document.getElementById("logo-upload")?.click()}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Click to Upload Logo
+                </Button>
+                <p className="text-xs text-gray-500 mt-1">PNG, SVG, JPG (recommended: 512x512)</p>
+              </div>
             </div>
           </div>
         </CardContent>

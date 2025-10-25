@@ -406,17 +406,19 @@ export function LessonManager() {
               {lessonForm.videoType === "upload" ? (
                 <div className="space-y-2">
                   <Label className="text-gray-300">Upload Video File</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
+                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-amber-500 transition-all cursor-pointer bg-gray-900/50"
+                    onClick={() => document.getElementById("lesson-video-upload")?.click()}
+                  >
+                    <input
                       type="file"
+                      id="lesson-video-upload"
                       accept="video/*"
                       onChange={(e) => setLessonForm({ ...lessonForm, videoFile: e.target.files?.[0] || null })}
-                      className="border-gray-700 bg-gray-900 text-gray-100"
+                      className="hidden"
                     />
-                    <Button variant="outline" className="border-gray-700 bg-transparent">
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload
-                    </Button>
+                    <Upload className="mx-auto h-10 w-10 text-gray-500 mb-2" />
+                    <p className="text-gray-300 font-medium">Click to select video</p>
+                    <p className="text-gray-500 text-sm mt-1">MP4, MOV, AVI (max 500MB)</p>
                   </div>
                   {lessonForm.videoFile && (
                     <p className="text-sm text-green-500">Selected: {lessonForm.videoFile.name}</p>
@@ -508,13 +510,21 @@ export function LessonManager() {
             <TabsContent value="files" className="space-y-4 mt-4">
               <div className="space-y-2">
                 <Label className="text-gray-300">Attachments (PDF, DOC, etc.)</Label>
-                <Input
-                  type="file"
-                  multiple
-                  accept=".pdf,.doc,.docx,.txt,.zip"
-                  onChange={(e) => setLessonForm({ ...lessonForm, attachments: Array.from(e.target.files || []) })}
-                  className="border-gray-700 bg-gray-900 text-gray-100"
-                />
+                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-amber-500 transition-all cursor-pointer bg-gray-900/50"
+                  onClick={() => document.getElementById("lesson-attachments-upload")?.click()}
+                >
+                  <input
+                    type="file"
+                    id="lesson-attachments-upload"
+                    multiple
+                    accept=".pdf,.doc,.docx,.txt,.zip"
+                    onChange={(e) => setLessonForm({ ...lessonForm, attachments: Array.from(e.target.files || []) })}
+                    className="hidden"
+                  />
+                  <Upload className="mx-auto h-10 w-10 text-gray-500 mb-2" />
+                  <p className="text-gray-300 font-medium">Click to select files</p>
+                  <p className="text-gray-500 text-sm mt-1">PDF, DOC, DOCX, TXT, ZIP (multiple files allowed)</p>
+                </div>
                 {lessonForm.attachments.length > 0 && (
                   <div className="mt-2 space-y-1">
                     {lessonForm.attachments.map((file, index) => (

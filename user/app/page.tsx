@@ -3987,11 +3987,11 @@ export default function UserDashboard() {
                         <Button
                           type="button"
                           variant="outline"
-                          className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-gray-900 bg-transparent"
+                          className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-gray-900 bg-transparent cursor-pointer transition-all"
                           onClick={() => document.getElementById("avatar-upload")?.click()}
                         >
                           <Upload className="mr-2" size={16} />
-                          Upload New Photo
+                          Click to Upload Photo
                         </Button>
                         {avatarUrl && (
                           <Button
@@ -5074,15 +5074,26 @@ export default function UserDashboard() {
                       <User size={32} className="text-gray-400" />
                     </div>
                   )}
-                  <div>
-                    <Input
+                  <div className="flex-1">
+                    <input
                       type="file"
+                      id="profile-completion-upload"
                       accept="image/*"
                       onChange={handleImageUpload}
                       disabled={uploading}
-                      className="bg-gray-700 text-white border-gray-600"
+                      className="hidden"
                     />
-                    {uploading && <p className="text-sm text-amber-500 mt-1">Uploading...</p>}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-gray-900 bg-transparent cursor-pointer transition-all"
+                      onClick={() => document.getElementById("profile-completion-upload")?.click()}
+                      disabled={uploading}
+                    >
+                      <Upload className="mr-2" size={16} />
+                      {uploading ? 'Uploading...' : 'Click to Select Photo'}
+                    </Button>
+                    <p className="text-xs text-gray-400 mt-1">Max 5MB • JPG, PNG, GIF</p>
                   </div>
                 </div>
               </div>
