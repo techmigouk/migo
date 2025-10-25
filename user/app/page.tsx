@@ -598,7 +598,7 @@ export default function UserDashboard() {
               console.log("� Fetching user data from API with token...")
               
               // Fetch user data from API using the token
-              const response = await fetch('http://localhost:3000/api/auth/me', {
+              const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/auth/me', {
                 method: 'GET',
                 headers: {
                   'Authorization': `Bearer ${tokenParam}`,
@@ -671,7 +671,7 @@ export default function UserDashboard() {
     const fetchCourses = async () => {
       try {
         setDataLoading(prev => ({ ...prev, courses: true }))
-        const response = await fetch('http://localhost:3000/api/courses')
+        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/courses')
         const data = await response.json()
         
         if (data.success && data.courses) {
@@ -711,7 +711,7 @@ export default function UserDashboard() {
         }
 
         setDataLoading(prev => ({ ...prev, notifications: true }))
-        const response = await fetch('http://localhost:3000/api/notifications?limit=20', {
+        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/notifications?limit=20', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -754,7 +754,7 @@ export default function UserDashboard() {
         }
 
         setDataLoading(prev => ({ ...prev, certificates: true }))
-        const response = await fetch('http://localhost:3000/api/certificates', {
+        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/certificates', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -800,7 +800,7 @@ export default function UserDashboard() {
         return
       }
 
-      const response = await fetch('http://localhost:3000/api/stripe/create-subscription-checkout', {
+      const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/stripe/create-subscription-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -3742,7 +3742,7 @@ export default function UserDashboard() {
             }
 
             // Call API to update avatar
-            const response = await fetch('http://localhost:3000/api/auth/me', {
+            const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/auth/me', {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -3798,7 +3798,7 @@ export default function UserDashboard() {
         console.log("Sending update data:", updateData)
 
         // Call API to update user profile
-        const response = await fetch('http://localhost:3000/api/auth/me', {
+        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/auth/me', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -4510,7 +4510,7 @@ export default function UserDashboard() {
       formDataUpload.append('file', file)
 
       try {
-        const response = await fetch('http://localhost:3000/api/upload', {
+        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/upload', {
           method: 'POST',
           body: formDataUpload,
         })
@@ -4540,7 +4540,7 @@ export default function UserDashboard() {
 
       setSubmitting(true)
       try {
-        const response = await fetch('http://localhost:3000/api/profile/complete', {
+        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/profile/complete', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -4812,3 +4812,4 @@ export default function UserDashboard() {
     </div>
   )
 }
+
