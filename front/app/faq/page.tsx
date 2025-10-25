@@ -71,9 +71,9 @@ export default function FAQPage() {
                     >
                       <h3 className="text-lg font-semibold text-white pr-4">{faq.q}</h3>
                       {openIndex === globalIndex ? (
-                        <ChevronUp className="text-[#f59e0b] flex-shrink-0" size={24} />
+                        <ChevronUp className="text-[#f59e0b] shrink-0" size={24} />
                       ) : (
-                        <ChevronDown className="text-[#f59e0b] flex-shrink-0" size={24} />
+                        <ChevronDown className="text-[#f59e0b] shrink-0" size={24} />
                       )}
                     </button>
                     {openIndex === globalIndex && (

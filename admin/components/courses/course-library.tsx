@@ -569,7 +569,7 @@ export function CourseLibrary() {
             <Card key={course.id} className="border-gray-700 bg-gray-800">
               <CardContent className="p-6">
                 <div className="flex gap-6">
-                  <div className="relative h-32 w-48 flex-shrink-0 overflow-hidden rounded-lg bg-gray-700">
+                  <div className="relative h-32 w-48 shrink-0 overflow-hidden rounded-lg bg-gray-700">
                     <img
                       src={course.thumbnailUrl || "/placeholder.svg"}
                       alt={course.title}

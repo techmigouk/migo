@@ -125,7 +125,7 @@ export default function PricingPage() {
   ]
 
   return (
-    <div className="bg-gradient-to-b from-[#0a1f44] to-[#121826] min-h-screen">
+    <div className="bg-linear-to-b from-[#0a1f44] to-[#121826] min-h-screen">
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">Choose Your Learning Path</h1>
@@ -182,7 +182,7 @@ export default function PricingPage() {
               <ul className="space-y-3">
                 {plan.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-start gap-3">
-                    <Check className="text-[#f59e0b] flex-shrink-0 mt-0.5" size={20} />
+                    <Check className="text-[#f59e0b] shrink-0 mt-0.5" size={20} />
                     <span className="text-[#d1d5db]">{feature}</span>
                   </li>
                 ))}
@@ -219,7 +219,7 @@ export default function PricingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] py-16">
+      <section className="bg-linear-to-r from-[#f59e0b] to-[#fbbf24] py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-[#0a1f44] mb-4">Ready to Start Learning?</h2>
           <p className="text-[#0a1f44] text-lg mb-8">Join 50,000+ learners building real tech skills</p>

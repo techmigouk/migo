@@ -74,7 +74,7 @@ export default async function HomePage() {
   ]
 
   return (
-    <div className="bg-gradient-to-b from-[#0a1f44] to-[#121826]">
+    <div className="bg-linear-to-b from-[#0a1f44] to-[#121826]">
       {/* Hero Section */}
   <section className="container mx-auto px-4 py-12 md:py-20">
         <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -105,7 +105,7 @@ export default async function HomePage() {
           </div>
           <div className="relative">
             <img src="/diverse-students-learning-coding.jpg" alt="Students learning" className="rounded-2xl shadow-2xl" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#f59e0b]/20 to-transparent rounded-2xl" />
+            <div className="absolute inset-0 bg-linear-to-tr from-[#f59e0b]/20 to-transparent rounded-2xl" />
           </div>
         </div>
       </section>
@@ -244,7 +244,7 @@ export default async function HomePage() {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-[#0a1f44] p-8 rounded-xl hover:scale-105 hover:outline hover:outline-2 hover:outline-[#f59e0b] transition-all duration-300"
+                className="bg-[#0a1f44] p-8 rounded-xl hover:scale-105 hover:outline-2 hover:outline-[#f59e0b] transition-all duration-300"
               >
                 <div className="flex items-center gap-4 mb-4">
                   <img
@@ -270,7 +270,7 @@ export default async function HomePage() {
       </section>
 
       {/* Final CTA */}
-  <section className="bleed bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] py-20">
+  <section className="bleed bg-linear-to-r from-[#f59e0b] to-[#fbbf24] py-20">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-[#0a1f44] mb-4">
             Start Learning Today — Your Portfolio Awaits

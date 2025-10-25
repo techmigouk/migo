@@ -1147,7 +1147,7 @@ export default function UserDashboard() {
         {!isPro && (
           <div className="pt-4">
             <Button
-              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold shadow-lg shadow-amber-500/50"
+              className="w-full bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold shadow-lg shadow-amber-500/50"
               onClick={() => {
                 setShowPricingModal(true)
                 if (isMobile) setIsMobileMenuOpen(false)
@@ -1302,7 +1302,7 @@ export default function UserDashboard() {
   const DashboardHome = () => (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <Card className="bg-gradient-to-r from-gray-800 to-gray-900 border-gray-700">
+      <Card className="bg-linear-to-r from-gray-800 to-gray-900 border-gray-700">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -1313,7 +1313,7 @@ export default function UserDashboard() {
             </div>
             {!isPro && (
               <Button
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold shadow-lg shadow-amber-500/50"
+                className="bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold shadow-lg shadow-amber-500/50"
                 onClick={() => setShowPricingModal(true)}
               >
                 <Crown className="mr-2" size={18} />
@@ -2062,7 +2062,7 @@ export default function UserDashboard() {
 
                 <div className="p-6 bg-gray-900 rounded-lg">
                   <div className="flex items-start space-x-4">
-                    <Sparkles className="text-amber-500 flex-shrink-0" size={32} />
+                    <Sparkles className="text-amber-500 shrink-0" size={32} />
                     <div className="text-left">
                       <p className="font-semibold text-white mb-2">Amigo AI says:</p>
                       <p className="text-gray-300">
@@ -2198,7 +2198,7 @@ export default function UserDashboard() {
                   ) : (
                     <div className="p-4 bg-green-900/20 border border-green-600 rounded-lg">
                       <div className="flex items-start space-x-3">
-                        <CheckCircle className="text-green-500 flex-shrink-0" size={20} />
+                        <CheckCircle className="text-green-500 shrink-0" size={20} />
                         <div>
                           <p className="font-semibold text-white mb-1">Excellent Work!</p>
                           <p className="text-sm text-gray-300">
@@ -2252,7 +2252,7 @@ export default function UserDashboard() {
             {certificates.map((cert) => (
               <Card
                 key={cert.certificateId}
-                className="bg-gradient-to-br from-gray-800 to-gray-900 border-amber-500 border-2"
+                className="bg-linear-to-br from-gray-800 to-gray-900 border-amber-500 border-2"
               >
                 <CardContent className="p-6 space-y-4">
                   <div className="flex items-center justify-between">
@@ -2629,7 +2629,7 @@ export default function UserDashboard() {
                 </p>
               </div>
               <Button
-                className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold"
+                className="w-full bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold"
                 onClick={() => setActiveScreen("settings")}
               >
                 <Crown className="mr-2" size={18} />
@@ -3104,7 +3104,7 @@ export default function UserDashboard() {
                     className={`flex items-start space-x-2 max-w-[80%] ${msg.sender === "user" ? "flex-row-reverse space-x-reverse" : ""}`}
                   >
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                         msg.sender === "ai" ? "bg-amber-500" : "bg-gray-700"
                       }`}
                     >
@@ -3198,7 +3198,7 @@ export default function UserDashboard() {
 
       {/* Featured Session */}
       {mockSessions[0] && (
-        <Card className="bg-gradient-to-r from-amber-600 to-amber-700 border-amber-500">
+        <Card className="bg-linear-to-r from-amber-600 to-amber-700 border-amber-500">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -3344,7 +3344,7 @@ export default function UserDashboard() {
         </div>
 
         {/* My Rank Card */}
-        <Card className="bg-gradient-to-r from-amber-600 to-amber-700 border-amber-500">
+        <Card className="bg-linear-to-r from-amber-600 to-amber-700 border-amber-500">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -3412,7 +3412,7 @@ export default function UserDashboard() {
                   key={entry.userId}
                   className={`p-4 rounded-lg flex items-center justify-between ${
                     entry.rank <= 3
-                      ? "bg-gradient-to-r from-amber-600/20 to-transparent border border-amber-500"
+                      ? "bg-linear-to-r from-amber-600/20 to-transparent border border-amber-500"
                       : "bg-gray-900"
                   }`}
                 >
@@ -3476,7 +3476,7 @@ export default function UserDashboard() {
 
       {/* Pro Discount Banner */}
       {isPro && (
-        <Card className="bg-gradient-to-r from-amber-600 to-amber-700 border-amber-500">
+        <Card className="bg-linear-to-r from-amber-600 to-amber-700 border-amber-500">
           <CardContent className="p-4 text-center">
             <p className="text-gray-900 font-semibold">
               ✨ Your Pro membership gives you 20% off all Marketplace items! ✨
@@ -3581,7 +3581,7 @@ export default function UserDashboard() {
                 <p className="text-sm text-gray-400 mb-2">Referral Link</p>
                 <div className="flex items-center space-x-2">
                   <p className="text-xs text-gray-300 truncate flex-1">{referralLink}</p>
-                  <Button size="icon" variant="ghost" className="text-gray-400 hover:text-white flex-shrink-0">
+                  <Button size="icon" variant="ghost" className="text-gray-400 hover:text-white shrink-0">
                     <Copy size={16} />
                   </Button>
                 </div>
@@ -4189,19 +4189,19 @@ export default function UserDashboard() {
                         <p className="text-xs text-gray-400">Perfect for exploring and getting started with basic learning</p>
                         <ul className="space-y-2 text-sm text-gray-400">
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Access to 5 free courses</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Basic project templates</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Community forum access</span>
                           </li>
                           <li className="flex items-start">
-                            <X className="mr-2 text-red-500 flex-shrink-0" size={16} />
+                            <X className="mr-2 text-red-500 shrink-0" size={16} />
                             <span>No certificates</span>
                           </li>
                         </ul>
@@ -4222,19 +4222,19 @@ export default function UserDashboard() {
                         <p className="text-xs text-gray-400">For learners who want flexibility with month-to-month access</p>
                         <ul className="space-y-2 text-sm text-gray-400">
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Full course library</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Unlimited projects</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Verified certificates</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Mentor access</span>
                           </li>
                         </ul>
@@ -4250,7 +4250,7 @@ export default function UserDashboard() {
                     </Card>
 
                     {/* Annual Plan - MOST POPULAR */}
-                    <Card className="bg-gradient-to-br from-amber-600/20 to-transparent border-amber-500 border-2 relative">
+                    <Card className="bg-linear-to-br from-amber-600/20 to-transparent border-amber-500 border-2 relative">
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                         <Badge className="bg-amber-600 text-gray-900">🔥 Most Popular</Badge>
                       </div>
@@ -4265,19 +4265,19 @@ export default function UserDashboard() {
                         <p className="text-xs text-gray-400">Best value! Serious learners save 16% with annual commitment</p>
                         <ul className="space-y-2 text-sm text-gray-400">
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Everything in Monthly</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Priority support</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Exclusive workshops</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Early access to new content</span>
                           </li>
                         </ul>
@@ -4293,7 +4293,7 @@ export default function UserDashboard() {
                     </Card>
 
                     {/* Lifetime Plan */}
-                    <Card className="bg-gradient-to-br from-purple-600/20 to-transparent border-purple-500 border-2 relative">
+                    <Card className="bg-linear-to-br from-purple-600/20 to-transparent border-purple-500 border-2 relative">
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                         <Badge className="bg-purple-600 text-white">💎 Best Deal</Badge>
                       </div>
@@ -4308,19 +4308,19 @@ export default function UserDashboard() {
                         <p className="text-xs text-gray-400">One-time payment for lifetime access - never pay again!</p>
                         <ul className="space-y-2 text-sm text-gray-400">
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Everything in Annual</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>Lifetime updates</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>VIP community access</span>
                           </li>
                           <li className="flex items-start">
-                            <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                            <Check className="mr-2 text-green-500 shrink-0" size={16} />
                             <span>All future courses free</span>
                           </li>
                         </ul>
@@ -4399,7 +4399,7 @@ export default function UserDashboard() {
                     </div>
                   </div>
                   <div className="p-3 bg-blue-900/20 border border-blue-600 rounded-lg flex items-start space-x-2">
-                    <Shield className="text-blue-500 flex-shrink-0" size={20} />
+                    <Shield className="text-blue-500 shrink-0" size={20} />
                     <p className="text-sm text-gray-300">
                       Your payment details are encrypted and never stored directly by TechMigo.
                     </p>
@@ -4528,7 +4528,7 @@ export default function UserDashboard() {
     }
 
     return (
-      <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[100] overflow-y-auto">
+      <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-100 overflow-y-auto">
         <div className="min-h-screen flex items-start justify-center p-4 py-8">
           <div className="bg-gray-800 rounded-xl w-full max-w-5xl my-8 border border-gray-700 shadow-2xl relative">
             {/* Close Button - Top Right */}
@@ -4542,13 +4542,13 @@ export default function UserDashboard() {
             </Button>
 
             {/* Course Header Image */}
-            <div className="relative h-56 md:h-72 bg-gradient-to-br from-amber-500/20 to-gray-800 rounded-t-xl overflow-hidden">
+            <div className="relative h-56 md:h-72 bg-linear-to-br from-amber-500/20 to-gray-800 rounded-t-xl overflow-hidden">
               <img
                 src={selectedCourse.imageUrl || "/placeholder.svg"}
                 alt={selectedCourse.title}
                 className="w-full h-full object-cover opacity-40"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-800 via-transparent to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-gray-800 via-transparent to-transparent"></div>
               
               {/* Title Overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
@@ -4584,7 +4584,7 @@ export default function UserDashboard() {
                 <h3 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">Course Introduction</h3>
                 <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
                   <div className="relative bg-black aspect-video flex items-center justify-center">
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-br from-amber-500/10 to-transparent"></div>
                     <Button
                       size="lg"
                       className="bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-full w-16 h-16 md:w-20 md:h-20 shadow-lg hover:scale-110 transition-transform"
@@ -4606,19 +4606,19 @@ export default function UserDashboard() {
                   <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 md:p-6">
                     <ul className="space-y-3">
                       <li className="flex items-start gap-3">
-                        <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
+                        <Check className="text-amber-500 shrink-0 mt-0.5" size={20} />
                         <span className="text-gray-300 text-sm md:text-base">Master core concepts and advanced techniques</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
+                        <Check className="text-amber-500 shrink-0 mt-0.5" size={20} />
                         <span className="text-gray-300 text-sm md:text-base">Build real-world projects from scratch</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
+                        <Check className="text-amber-500 shrink-0 mt-0.5" size={20} />
                         <span className="text-gray-300 text-sm md:text-base">Get hands-on experience with industry tools</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
+                        <Check className="text-amber-500 shrink-0 mt-0.5" size={20} />
                         <span className="text-gray-300 text-sm md:text-base">Earn a verified certificate upon completion</span>
                       </li>
                     </ul>
@@ -4641,7 +4641,7 @@ export default function UserDashboard() {
                           className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
                         >
                           <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 font-bold text-sm flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 font-bold text-sm shrink-0">
                               {index + 1}
                             </div>
                             <div className="min-w-0 flex-1">
@@ -4652,7 +4652,7 @@ export default function UserDashboard() {
                             </div>
                           </div>
                           {module.locked && (
-                            <Lock className="text-amber-500 flex-shrink-0 ml-2" size={18} />
+                            <Lock className="text-amber-500 shrink-0 ml-2" size={18} />
                           )}
                         </div>
                       ))}
@@ -4666,7 +4666,7 @@ export default function UserDashboard() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     onClick={handleEnroll}
-                    className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold text-base md:text-lg py-5 md:py-6 shadow-lg hover:shadow-amber-500/50 transition-all"
+                    className="flex-1 bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 font-bold text-base md:text-lg py-5 md:py-6 shadow-lg hover:shadow-amber-500/50 transition-all"
                   >
                     <BookOpen className="mr-2" size={20} />
                     Start Learning Now
@@ -4803,7 +4803,7 @@ export default function UserDashboard() {
     }
 
     return (
-      <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[100] overflow-y-auto">
+      <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-100 overflow-y-auto">
         <div className="min-h-screen flex items-start justify-center p-4 py-8">
           <div className="bg-gray-800 rounded-xl w-full max-w-7xl my-8 border border-gray-700 shadow-2xl relative">
             {/* Close Button - Top Right */}
@@ -4880,7 +4880,7 @@ export default function UserDashboard() {
                         disabled={pricingLoading === plan.name}
                         className={`w-full mb-6 py-6 font-semibold text-base transition-all ${
                           plan.highlighted
-                            ? "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 shadow-lg hover:shadow-amber-500/50"
+                            ? "bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-900 shadow-lg hover:shadow-amber-500/50"
                             : "bg-gray-700 hover:bg-gray-600 text-white"
                         }`}
                       >
@@ -4909,7 +4909,7 @@ export default function UserDashboard() {
                     <ul className="space-y-3">
                       {plan.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-start gap-3">
-                          <Check className="text-amber-500 flex-shrink-0 mt-0.5" size={18} />
+                          <Check className="text-amber-500 shrink-0 mt-0.5" size={18} />
                           <span className="text-gray-300 text-sm">{feature}</span>
                         </li>
                       ))}
