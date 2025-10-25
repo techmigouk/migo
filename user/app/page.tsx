@@ -505,6 +505,16 @@ export default function UserDashboard() {
   useEffect(() => {
     if (typeof window === 'undefined') return
     
+    // Check URL parameters for token (from login redirect)
+    const urlParams = new URLSearchParams(window.location.search)
+    const tokenParam = urlParams.get('token')
+    
+    // If token in URL, we're being redirected from login - let the other useEffect handle it
+    if (tokenParam) {
+      return
+    }
+    
+    // Otherwise, check if already logged in
     const token = localStorage.getItem("token")
     const user = localStorage.getItem("user")
     
