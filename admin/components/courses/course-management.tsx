@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CourseLibrary } from "./course-library"
-import { LessonManager } from "./lesson-manager"
 import { QuizManager } from "./quiz-manager"
 import { MediaLibrary } from "./media-library"
 import { InstructorManager } from "./instructor-manager"
@@ -23,7 +22,6 @@ export function CourseManagement() {
         <TabsList className="bg-gray-800">
           <TabsTrigger value="courses">Course Library</TabsTrigger>
           <TabsTrigger value="submitted-projects">Submitted Projects</TabsTrigger>
-          <TabsTrigger value="lessons">Lessons</TabsTrigger>
           <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
           <TabsTrigger value="media">Media Library</TabsTrigger>
           <TabsTrigger value="instructors">Instructors</TabsTrigger>
@@ -35,10 +33,6 @@ export function CourseManagement() {
 
         <TabsContent value="submitted-projects" className="mt-6">
           <SubmittedProjects />
-        </TabsContent>
-
-        <TabsContent value="lessons" className="mt-6">
-          <LessonManager />
         </TabsContent>
 
         <TabsContent value="quizzes" className="mt-6">

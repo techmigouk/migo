@@ -3,37 +3,16 @@
 import Link from "next/link"
 import { Check } from "lucide-react"
 import { useState } from "react"
-import { useAuth } from "@/lib/auth-context"
-import { useRouter } from "next/navigation"
 
 export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null)
-  const { user } = useAuth()
-  const router = useRouter()
 
   const handleSubscribe = async (planName: string, priceId: string) => {
-    // Check if user is logged in
-    if (!user) {
-      // Redirect to login with return URL
-      router.push(`/login?redirect=/pricing&plan=${planName}`)
-      return
-    }
-
     setLoading(planName)
     try {
-      // Get token from localStorage
-      const token = localStorage.getItem('token')
-      if (!token) {
-        router.push(`/login?redirect=/pricing&plan=${planName}`)
-        return
-      }
-
       const response = await fetch('/api/stripe/create-subscription-checkout', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ priceId }),
       })
 
@@ -41,7 +20,7 @@ export default function PricingPage() {
       if (data.url) {
         window.location.href = data.url
       } else {
-        alert(data.error || 'Failed to create checkout session')
+        alert('Failed to create checkout session')
         setLoading(null)
       }
     } catch (error) {

@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
     
     // Use lean() for faster queries and select only needed fields
     const courses = await CourseModel.find({})
-      .select('title description thumbnail status category difficulty level price currency createdAt updatedAt')
+      .select('title description thumbnail status category difficulty level price currency createdAt updatedAt instructor duration lessons projectTitle projectDescription projectMedia introVideoUrl whatYouWillLearn courseCurriculum hasCertificate')
+      .populate('instructor', 'name avatar title bio expertise') // Populate instructor details
       .lean()
       .sort({ createdAt: -1 }) // Most recent first
       .limit(limit)
@@ -46,6 +47,24 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     console.log('Creating course with data:', body);
+    
+    // Get instructor ID from auth token if not provided
+    const authHeader = request.headers.get('authorization');
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      try {
+        const { authUtils } = await import('@amigo/shared');
+        const payload = authUtils.verifyToken(token);
+        
+        // If no instructor specified, use the logged-in user
+        if (!body.instructor && payload) {
+          body.instructor = payload.userId;
+          console.log('Auto-assigned instructor from token:', payload.userId);
+        }
+      } catch (err) {
+        console.log('Could not extract user from token:', err);
+      }
+    }
     
     const course = new CourseModel(body);
     await course.save();

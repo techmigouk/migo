@@ -59,7 +59,13 @@ export async function GET(request: NextRequest) {
         isEmailVerified: user.isEmailVerified,
         avatar: user.avatar,
         phone: user.phone,
+        bio: user.bio,
+        country: user.country,
+        city: user.city,
+        dateOfBirth: user.dateOfBirth,
         learningGoal: user.learningGoal,
+        profileCompleted: user.profileCompleted,
+        profileCompletedAt: user.profileCompletedAt,
         notificationPrefs: user.notificationPrefs,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt

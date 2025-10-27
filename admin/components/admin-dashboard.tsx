@@ -38,6 +38,7 @@ import {
 import { UserManagement } from "./user-management/user-management"
 import { RBACManagement } from "./rbac/rbac-management"
 import { CourseManagement } from "./courses/course-management"
+import { LessonManager } from "./courses/lesson-manager"
 import { StaffManagement } from "./staff/staff-management"
 import { PlatformSettings } from "./settings/platform-settings"
 import { CommunityHub } from "./community/community-hub"
@@ -69,6 +70,7 @@ type Screen =
   | "staff"
   | "platform-settings"
   | "courses"
+  | "lessons"
   | "community"
   | "mentorship"
   | "progress"
@@ -105,6 +107,7 @@ const navigationItems: NavItem[] = [
   { id: "staff", label: "Staff Management", icon: UserCog, category: "Internal Operations" },
   { id: "platform-settings", label: "Platform Settings", icon: Settings, category: "Internal Operations" },
   { id: "courses", label: "Course Management", icon: BookOpen, category: "Learning" },
+  { id: "lessons", label: "Lesson Manager", icon: BookOpen, category: "Learning" },
   { id: "community", label: "Community Hub", icon: MessageSquare, category: "Learning" },
   { id: "mentorship", label: "Mentorship", icon: UserCog, category: "Learning" },
   { id: "progress", label: "Student Progress", icon: TrendingUp, category: "Learning" },
@@ -288,6 +291,7 @@ export function AdminDashboard() {
             {activeScreen === "staff" && <StaffManagement />}
             {activeScreen === "platform-settings" && <PlatformSettings />}
             {activeScreen === "courses" && <CourseManagement />}
+            {activeScreen === "lessons" && <LessonManager />}
             {activeScreen === "community" && <CommunityHub />}
             {activeScreen === "mentorship" && <MentorshipSystem />}
             {activeScreen === "progress" && <StudentProgress />}

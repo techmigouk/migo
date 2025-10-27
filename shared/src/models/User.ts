@@ -27,12 +27,26 @@ const UserMongooseSchema = new mongoose.Schema({
   avatar: { type: String },
   phone: { type: String },
   bio: { type: String },
+  position: { type: String }, // Instructor position/designation
+  expertise: [{ type: String }], // Instructor areas of expertise
   country: { type: String },
   city: { type: String },
   dateOfBirth: { type: Date },
   learningGoal: { type: String, enum: ['career', 'upskill', 'business'] },
   profileCompleted: { type: Boolean, default: false },
   profileCompletedAt: { type: Date },
+  
+  // Wishlist for courses
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+  
+  // Points and gamification
+  points: { type: Number, default: 0 },
+  totalTimeSpent: { type: Number, default: 0 }, // in minutes
+  coursesCompleted: { type: Number, default: 0 },
+  quizzesCompleted: { type: Number, default: 0 },
+  projectsCompleted: { type: Number, default: 0 },
+  averageQuizScore: { type: Number, default: 0 },
+  
   notificationPrefs: {
     courseUpdates: { type: Boolean, default: true },
     mentorshipMessages: { type: Boolean, default: true },

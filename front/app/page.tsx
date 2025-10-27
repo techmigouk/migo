@@ -123,7 +123,6 @@ export default async function HomePage() {
               { id: 'bp', text: 'BP', color: '#009B3A' },
               { id: 'unilever', text: 'UNILEVER', color: '#0072CE' },
               { id: 'gsk', text: 'GSK', color: '#FF6A00' },
-              { id: 'barclays', text: 'BARCLAYS', color: '#00AEEF' },
             ].map((logo) => (
               <button key={logo.id} className="trusted-badge trusted-text-badge" aria-label={`${logo.text} - enterprise partner`}>
                 <span className="trusted-text" style={{ color: 'white' }}>{logo.text}</span>

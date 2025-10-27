@@ -70,7 +70,7 @@ Migo is a modern learning management system designed for educational institution
 - **Runtime:** Node.js
 - **Database:** MongoDB with Mongoose
 - **Authentication:** JWT, bcrypt
-- **File Upload:** Multer
+- **File Storage:** Cloudinary (images & videos with HLS streaming)
 - **Email:** Nodemailer
 - **AI Integration:** OpenAI API
 
@@ -267,6 +267,8 @@ npx playwright show-report
 - [API Documentation](./API_DOCUMENTATION.md) - REST API endpoints and usage
 - [Email Documentation](./EMAIL_DOCUMENTATION.md) - Email templates and configuration
 - [File Storage](./FILE_STORAGE_DOCUMENTATION.md) - File upload and storage guide
+- [Cloudinary Setup](./CLOUDINARY_SETUP.md) - Complete Cloudinary configuration guide
+- [Cloudinary Quick Start](./CLOUDINARY_QUICKSTART.md) - Quick reference for Cloudinary integration
 - [Mock Data Removal](./MOCK_DATA_REMOVAL_CHECKLIST.md) - Production readiness checklist
 
 ## 🚀 Deployment

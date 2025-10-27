@@ -32,9 +32,29 @@ const CourseMongooseSchema = new mongoose.Schema({
   thumbnail: { type: String },
   status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft' },
   enrollmentCount: { type: Number, default: 0 },
-  rating: { type: Number, default: 0, min: 0, max: 5 }
+  rating: { type: Number, default: 0, min: 0, max: 5 },
+  lessons: { type: Number, default: 0 },
+  introVideoUrl: { type: String },
+  whatYouWillLearn: [{ type: String }],
+  courseCurriculum: [{
+    section: { type: String },
+    lectures: [{
+      title: { type: String },
+      duration: { type: String }
+    }]
+  }],
+  hasCertificate: { type: Boolean, default: true },
+  projectTitle: { type: String },
+  projectDescription: { type: String },
+  projectMedia: { type: String }
 }, {
-  timestamps: true
+  timestamps: true,
+  strict: false  // Allow fields not in schema
 });
 
-export const CourseModel = mongoose.models.Course || mongoose.model('Course', CourseMongooseSchema);
+// Delete the model if it exists to avoid caching issues
+if (mongoose.models.Course) {
+  delete mongoose.models.Course;
+}
+
+export const CourseModel = mongoose.model('Course', CourseMongooseSchema);

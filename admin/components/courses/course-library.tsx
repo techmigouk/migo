@@ -25,7 +25,11 @@ import {
   Trash2,
   Copy,
   Loader2,
-  Upload,
+  CheckCircle,
+  XCircle,
+  Info,
+  Lock,
+  X,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useAdminAuth } from "@/lib/auth-context"
@@ -73,15 +77,23 @@ export function CourseLibrary() {
   const projectTitleRef = useRef<HTMLInputElement>(null)
   const projectDescriptionRef = useRef<HTMLTextAreaElement>(null)
   const thumbnailRef = useRef<HTMLInputElement>(null)
-  const projectMediaRef = useRef<HTMLInputElement>(null)
   const [selectedCategory, setSelectedCategory] = useState("Frontend Development")
   const [selectedLevel, setSelectedLevel] = useState<"beginner" | "intermediate" | "advanced">("beginner")
   const [selectedStatus, setSelectedStatus] = useState<"draft" | "published" | "archived">("draft")
   const [selectedAccessType, setSelectedAccessType] = useState<"Free" | "Premium">("Free")
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("")
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false)
-  const [projectMediaPreview, setProjectMediaPreview] = useState<string>("")
-  const [uploadingProjectMedia, setUploadingProjectMedia] = useState(false)
+
+  // Toast Notification System
+  const [toasts, setToasts] = useState<Array<{id: number, type: 'success' | 'error' | 'warning' | 'info', message: string, icon?: React.ReactNode}>>([])
+  
+  const showToast = (type: 'success' | 'error' | 'warning' | 'info', message: string, icon?: React.ReactNode) => {
+    const id = Date.now()
+    setToasts(prev => [...prev, { id, type, message, icon }])
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id))
+    }, 4000)
+  }
 
   // Fetch courses on mount
   useEffect(() => {
@@ -95,30 +107,31 @@ export function CourseLibrary() {
       console.log('Fetching courses...')
       console.log('Admin token:', adminToken ? 'Present' : 'Missing')
       
+      // Call admin API directly instead of front API
       const response = await fetch('/api/courses?status=all', {
         headers: {
-          'Authorization': `Bearer ${adminToken}`,
-        },
+          'Authorization': `Bearer ${adminToken || ''}`,
+          'Content-Type': 'application/json'
+        }
       })
       
       const data = await response.json()
       console.log('Fetch courses response:', data)
       
-      // Handle both response formats: { success, courses } or { courses }
-      const coursesData = data.courses || (data.success && data.courses) || []
-      
-      console.log('Number of courses fetched:', coursesData.length)
-      // Map _id to id for UI consistency
-      const mappedCourses = coursesData.map((course: any) => ({
-        ...course,
-        id: course._id || course.id,
-      }))
-      console.log('Mapped courses:', mappedCourses)
-      setCourses(mappedCourses)
+      if (data.courses) {
+        console.log('Number of courses fetched:', data.courses.length)
+        // Map _id to id for UI consistency
+        const mappedCourses = data.courses.map((course: any) => ({
+          ...course,
+          id: course._id || course.id,
+        }))
+        console.log('Mapped courses:', mappedCourses)
+        setCourses(mappedCourses)
+      } else {
+        console.error('Failed to fetch courses:', data)
+      }
     } catch (error) {
       console.error('Error fetching courses:', error)
-      console.log('API error, no courses to display')
-      setCourses([])
     } finally {
       setLoading(false)
     }
@@ -130,13 +143,13 @@ export function CourseLibrary() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file')
+      showToast('warning', 'Please select an image file', <Info size={16} />)
       return
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size should be less than 5MB')
+      showToast('warning', 'Image size should be less than 5MB', <Info size={16} />)
       return
     }
 
@@ -161,71 +174,20 @@ export function CourseLibrary() {
       if (data.success && data.url) {
         setThumbnailPreview(data.url)
       } else {
-        alert('Failed to upload image')
+        showToast('error', 'Failed to upload image', <XCircle size={16} />)
       }
     } catch (error) {
       console.error('Error uploading thumbnail:', error)
-      alert('Error uploading image')
+      showToast('error', 'Error uploading image', <XCircle size={16} />)
     } finally {
       setUploadingThumbnail(false)
-    }
-  }
-
-  const handleProjectMediaChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Validate file type (images or videos)
-    const isImage = file.type.startsWith('image/')
-    const isVideo = file.type.startsWith('video/')
-    
-    if (!isImage && !isVideo) {
-      alert('Please select an image or video file')
-      return
-    }
-
-    // Validate file size (max 50MB for videos, 5MB for images)
-    const maxSize = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024
-    if (file.size > maxSize) {
-      alert(`File size should be less than ${isVideo ? '50MB' : '5MB'}`)
-      return
-    }
-
-    try {
-      setUploadingProjectMedia(true)
-      
-      // Create form data
-      const formData = new FormData()
-      formData.append('file', file)
-
-      // Upload to API
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': `Bearer ${adminToken}`,
-        },
-      })
-
-      const data = await response.json()
-
-      if (data.success && data.url) {
-        setProjectMediaPreview(data.url)
-      } else {
-        alert('Failed to upload file')
-      }
-    } catch (error) {
-      console.error('Error uploading project media:', error)
-      alert('Error uploading file')
-    } finally {
-      setUploadingProjectMedia(false)
     }
   }
 
   const handleCreateCourse = async (): Promise<void> => {
     try {
       if (!titleRef.current?.value || !descriptionRef.current?.value) {
-        alert('Please fill in title and description')
+        showToast('warning', 'Please fill in title and description', <Info size={16} />)
         return
       }
 
@@ -235,11 +197,10 @@ export function CourseLibrary() {
         category: selectedCategory,
         level: selectedLevel,
         status: selectedStatus,
-        price: selectedAccessType === "Premium" ? 9.99 : 0,
-        duration: 0,
+        price: selectedAccessType === "Premium" ? 9.99 : 0, // Convert to price
+        duration: 0, // Default duration, can be updated later
         projectTitle: projectTitleRef.current?.value || undefined,
         projectDescription: projectDescriptionRef.current?.value || undefined,
-        projectMedia: projectMediaPreview || undefined,
         thumbnail: thumbnailPreview || '/placeholder.svg',
       }
 
@@ -250,50 +211,43 @@ export function CourseLibrary() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${adminToken}`,
+          'Authorization': `Bearer ${adminToken || ''}`
         },
-        body: JSON.stringify(courseData),
+        body: JSON.stringify(courseData)
       })
-
-      console.log('Response status:', response.status)
+      
       const data = await response.json()
+
       console.log('API Response:', data)
 
-      // API returns { success: true, course }
-      if (response.ok && data && (data.success || data.course)) {
-        alert('Course created successfully!')
+      if (data.success) {
+        showToast('success', 'Course created successfully!', <CheckCircle size={16} />)
         setShowCreateCourseDialog(false)
-        fetchCourses()
-        resetForm()
+        fetchCourses() // Refresh the list
+        // Reset form
+        if (titleRef.current) titleRef.current.value = ''
+        if (descriptionRef.current) descriptionRef.current.value = ''
+        if (projectTitleRef.current) projectTitleRef.current.value = ''
+        if (projectDescriptionRef.current) projectDescriptionRef.current.value = ''
+        if (thumbnailRef.current) thumbnailRef.current.value = ''
+        setSelectedLevel('beginner')
+        setSelectedStatus('draft')
+        setSelectedAccessType('Free')
+        setThumbnailPreview('')
+        setSelectedAccessType('Free')
       } else {
-        throw new Error(data.error || 'Failed to create course - invalid response')
+        showToast('error', 'Failed to create course: ' + (data.error || 'Unknown error'), <XCircle size={16} />)
       }
-
     } catch (error: any) {
       console.error('Error creating course:', error)
-      alert('Error creating course: ' + (error.message || 'Please check your connection and try again'))
+      showToast('error', 'Error creating course: ' + error.message, <XCircle size={16} />)
     }
-  }
-
-  const resetForm = () => {
-    if (titleRef.current) titleRef.current.value = ''
-    if (descriptionRef.current) descriptionRef.current.value = ''
-    if (projectTitleRef.current) projectTitleRef.current.value = ''
-    if (projectDescriptionRef.current) projectDescriptionRef.current.value = ''
-    if (thumbnailRef.current) thumbnailRef.current.value = ''
-    if (projectMediaRef.current) projectMediaRef.current.value = ''
-    setSelectedLevel('beginner')
-    setSelectedStatus('draft')
-    setSelectedAccessType('Free')
-    setThumbnailPreview('')
-    setProjectMediaPreview('')
-    setEditingCourse(null)
   }
 
   const handleUpdateCourse = async () => {
     try {
       if (!editingCourse || !titleRef.current?.value || !descriptionRef.current?.value) {
-        alert('Please fill in all required fields')
+        showToast('warning', 'Please fill in all required fields', <Info size={16} />)
         return
       }
 
@@ -306,38 +260,31 @@ export function CourseLibrary() {
         price: selectedAccessType === "Premium" ? 9.99 : 0,
         projectTitle: projectTitleRef.current?.value || undefined,
         projectDescription: projectDescriptionRef.current?.value || undefined,
-        projectMedia: projectMediaPreview || editingCourse.projectMedia || undefined,
         thumbnail: thumbnailPreview || editingCourse.thumbnail || '/placeholder.svg',
       }
-
-      console.log('Updating course:', editingCourse.id || editingCourse._id)
-      console.log('Update data:', courseData)
 
       const response = await fetch(`/api/courses/${editingCourse.id || editingCourse._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${adminToken}`,
+          'Authorization': `Bearer ${adminToken || ''}`
         },
-        body: JSON.stringify(courseData),
+        body: JSON.stringify(courseData)
       })
-
-      console.log('Response status:', response.status)
+      
       const data = await response.json()
-      console.log('Response data:', data)
 
-      if (response.ok && data && (data.success || data.course)) {
-        alert('Course updated successfully!')
+      if (data.success) {
+        showToast('success', 'Course updated successfully!', <CheckCircle size={16} />)
         setShowCreateCourseDialog(false)
-        resetForm()
-        fetchCourses()
+        setEditingCourse(null)
+        fetchCourses() // Refresh the list
       } else {
-        throw new Error(data.error || 'Failed to update course - invalid response')
+        showToast('error', 'Failed to update course: ' + (data.error || 'Unknown error'), <XCircle size={16} />)
       }
-
     } catch (error: any) {
       console.error('Error updating course:', error)
-      alert('Error updating course: ' + (error.message || 'Please check your connection and try again'))
+      showToast('error', 'Error updating course: ' + error.message, <XCircle size={16} />)
     }
   }
 
@@ -360,7 +307,6 @@ export function CourseLibrary() {
     setSelectedStatus(course.status)
     setSelectedAccessType((course.price || 0) > 0 ? "Premium" : "Free")
     setThumbnailPreview(course.thumbnail || '')
-    setProjectMediaPreview(course.projectMedia || '')
     setShowCreateCourseDialog(true)
   }
 
@@ -376,30 +322,28 @@ export function CourseLibrary() {
         duration: course.duration || 0,
         projectTitle: course.projectTitle,
         projectDescription: course.projectDescription,
-        thumbnail: course.thumbnail,
       }
 
       const response = await fetch('/api/courses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${adminToken}`,
+          'Authorization': `Bearer ${adminToken || ''}`
         },
-        body: JSON.stringify(courseData),
+        body: JSON.stringify(courseData)
       })
-
+      
       const data = await response.json()
 
-      if (data && (data.success || data._id || data.id)) {
-        alert('Course duplicated successfully!')
-        fetchCourses()
+      if (data.success) {
+        showToast('success', 'Course duplicated successfully!', <Copy size={16} />)
+        fetchCourses() // Refresh the list
       } else {
-        throw new Error('Failed to duplicate course - invalid response')
+        showToast('error', 'Failed to duplicate course: ' + (data.error || 'Unknown error'), <XCircle size={16} />)
       }
-
     } catch (error: any) {
       console.error('Error duplicating course:', error)
-      alert('Error duplicating course: ' + (error.message || 'Please check your connection and try again'))
+      showToast('error', 'Error duplicating course: ' + error.message, <XCircle size={16} />)
     }
   }
 
@@ -412,20 +356,22 @@ export function CourseLibrary() {
       const response = await fetch(`/api/courses/${course.id || course._id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${adminToken}`,
-        },
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken || ''}`
+        }
       })
-
+      
       const data = await response.json()
 
-      if (data && (data.success || data.message)) {
-        fetchCourses()
+      if (data.success) {
+        showToast('success', 'Course deleted successfully!', <CheckCircle size={16} />)
+        fetchCourses() // Refresh the list
       } else {
-        throw new Error('Failed to delete course - invalid response')
+        showToast('error', 'Failed to delete course: ' + (data.error || 'Unknown error'), <XCircle size={16} />)
       }
     } catch (error: any) {
       console.error('Error deleting course:', error)
-      alert('Error deleting course: ' + (error.message || 'Please check your connection and try again'))
+      showToast('error', 'Error deleting course: ' + error.message, <XCircle size={16} />)
     }
   }
 
@@ -775,14 +721,14 @@ export function CourseLibrary() {
           if (thumbnailRef.current) thumbnailRef.current.value = ''
         }
       }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border-gray-700 bg-gray-800 text-gray-100">
+        <DialogContent className="max-w-2xl max-h-[90vh] border-gray-700 bg-gray-800 text-gray-100 flex flex-col">
           <DialogHeader>
             <DialogTitle>{editingCourse ? "Edit Course" : "Create New Course"}</DialogTitle>
             <DialogDescription className="text-gray-400">
               {editingCourse ? "Update course information" : "Set up a new course for your platform"}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-y-auto flex-1 pr-2">
             <div>
               <Label className="text-gray-300">Course Title</Label>
               <Input
@@ -816,28 +762,17 @@ export function CourseLibrary() {
                   />
                 </div>
               )}
-              <div className="mt-2">
-                <input
-                  ref={thumbnailRef}
-                  type="file"
-                  id="course-thumbnail-upload"
-                  accept="image/*"
-                  onChange={handleThumbnailChange}
-                  disabled={uploadingThumbnail}
-                  className="hidden"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border-gray-700 text-gray-300 bg-transparent hover:bg-gray-700 cursor-pointer transition-all"
-                  onClick={() => document.getElementById("course-thumbnail-upload")?.click()}
-                  disabled={uploadingThumbnail}
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  {uploadingThumbnail ? 'Uploading...' : 'Click to Select Thumbnail'}
-                </Button>
-                <p className="text-xs text-gray-500 mt-1">Recommended: 1280x720px, JPG or PNG</p>
-              </div>
+              <Input
+                ref={thumbnailRef}
+                type="file"
+                accept="image/*"
+                onChange={handleThumbnailChange}
+                disabled={uploadingThumbnail}
+                className="mt-2 border-gray-700 bg-gray-800 text-gray-100"
+              />
+              {uploadingThumbnail && (
+                <p className="text-sm text-amber-500 mt-1">Uploading image...</p>
+              )}
             </div>
             <div className="space-y-2 rounded-lg border border-gray-700 bg-gray-900 p-4">
               <Label className="text-gray-300">Course Project</Label>
@@ -859,43 +794,11 @@ export function CourseLibrary() {
               />
               <div className="mt-2">
                 <Label className="text-gray-300 text-sm">Project Image/Video</Label>
-                {projectMediaPreview && (
-                  <div className="mt-2">
-                    {projectMediaPreview.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                      <img 
-                        src={projectMediaPreview} 
-                        alt="Project media preview" 
-                        className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-700"
-                      />
-                    ) : (
-                      <video 
-                        src={projectMediaPreview} 
-                        className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-700"
-                        controls
-                      />
-                    )}
-                  </div>
-                )}
-                <input
-                  ref={projectMediaRef}
+                <Input
                   type="file"
-                  id="project-media-upload"
                   accept="image/*,video/*"
-                  onChange={handleProjectMediaChange}
-                  disabled={uploadingProjectMedia}
-                  className="hidden"
+                  className="mt-1 border-gray-700 bg-gray-800 text-gray-100"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="mt-1 border-gray-700 text-gray-300 bg-transparent hover:bg-gray-700 cursor-pointer transition-all"
-                  onClick={() => document.getElementById("project-media-upload")?.click()}
-                  disabled={uploadingProjectMedia}
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  {uploadingProjectMedia ? 'Uploading...' : 'Click to Select File'}
-                </Button>
-                <p className="text-xs text-gray-500 mt-1">Image (5MB) or video (50MB) for the project</p>
               </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
@@ -952,20 +855,82 @@ export function CourseLibrary() {
                 </Select>
               </div>
             </div>
-            <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setShowCreateCourseDialog(false)} className="border-gray-700">
-                Cancel
-              </Button>
-              <Button
-                className="bg-amber-600 hover:bg-amber-700"
-                onClick={editingCourse ? handleUpdateCourse : handleCreateCourse}
-              >
-                {editingCourse ? "Update Course" : "Create Course"}
-              </Button>
-            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-4 border-t border-gray-700 mt-4">
+            <Button variant="outline" onClick={() => setShowCreateCourseDialog(false)} className="border-gray-700">
+              Cancel
+            </Button>
+            <Button
+              className="bg-amber-600 hover:bg-amber-700"
+              onClick={editingCourse ? handleUpdateCourse : handleCreateCourse}
+            >
+              {editingCourse ? "Update Course" : "Create Course"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Premium Toast Notifications */}
+      <div className="fixed top-4 right-4 z-100 space-y-3 pointer-events-none">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            className="pointer-events-auto animate-in slide-in-from-right-full duration-300 flex items-start gap-3 p-4 rounded-xl shadow-2xl backdrop-blur-xl border min-w-[320px] max-w-md"
+            style={{
+              background: toast.type === 'success' 
+                ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%)'
+                : toast.type === 'error'
+                ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%)'
+                : toast.type === 'warning'
+                ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.15) 100%)'
+                : 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%)',
+              borderColor: toast.type === 'success'
+                ? 'rgba(16, 185, 129, 0.3)'
+                : toast.type === 'error'
+                ? 'rgba(239, 68, 68, 0.3)'
+                : toast.type === 'warning'
+                ? 'rgba(245, 158, 11, 0.3)'
+                : 'rgba(59, 130, 246, 0.3)',
+            }}
+          >
+            <div 
+              className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+              style={{
+                background: toast.type === 'success'
+                  ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                  : toast.type === 'error'
+                  ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                  : toast.type === 'warning'
+                  ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                  : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                boxShadow: toast.type === 'success'
+                  ? '0 0 20px rgba(16, 185, 129, 0.4)'
+                  : toast.type === 'error'
+                  ? '0 0 20px rgba(239, 68, 68, 0.4)'
+                  : toast.type === 'warning'
+                  ? '0 0 20px rgba(245, 158, 11, 0.4)'
+                  : '0 0 20px rgba(59, 130, 246, 0.4)',
+              }}
+            >
+              {toast.icon || (
+                toast.type === 'success' ? <CheckCircle size={20} className="text-white" /> :
+                toast.type === 'error' ? <XCircle size={20} className="text-white" /> :
+                toast.type === 'warning' ? <Info size={20} className="text-white" /> :
+                <Info size={20} className="text-white" />
+              )}
+            </div>
+            <div className="flex-1 pt-1">
+              <p className="text-white font-medium text-sm leading-tight">{toast.message}</p>
+            </div>
+            <button
+              onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+              className="shrink-0 text-white/60 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

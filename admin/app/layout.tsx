@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Providers } from '@/components/providers'
+import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -10,12 +11,6 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: 'TechMigo Admin Dashboard',
   description: 'Admin dashboard for TechMigo',
-  icons: {
-    icon: [
-      { url: '/logos/logo.ico' },
-      { url: '/logos/logo.png', type: 'image/png' }
-    ]
-  }
 }
 
 export default function RootLayout({
@@ -29,6 +24,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <Toaster />
         <Analytics />
       </body>
     </html>

@@ -10,6 +10,10 @@ export interface ILessonProgress extends Document {
   lastPosition: number // video position in seconds
   notes?: string
   bookmarked: boolean
+  quizCompleted?: boolean
+  quizScore?: number
+  quizCompletedAt?: Date
+  isUnlocked?: boolean
 }
 
 const LessonProgressSchema = new Schema<ILessonProgress>(
@@ -51,6 +55,20 @@ const LessonProgressSchema = new Schema<ILessonProgress>(
       type: String,
     },
     bookmarked: {
+      type: Boolean,
+      default: false,
+    },
+    quizCompleted: {
+      type: Boolean,
+      default: false,
+    },
+    quizScore: {
+      type: Number,
+    },
+    quizCompletedAt: {
+      type: Date,
+    },
+    isUnlocked: {
       type: Boolean,
       default: false,
     },

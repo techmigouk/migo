@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { DollarSign, CreditCard, TrendingUp, AlertCircle, CheckCircle2, Download } from "lucide-react"
+import { DollarSign, CreditCard, TrendingUp, AlertCircle, CheckCircle2, Download, Info, X } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -103,6 +103,14 @@ export function BillingManagement() {
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
 
+  // Toast notification state
+  const [toasts, setToasts] = useState<{ id: number; type: 'success' | 'error' | 'warning' | 'info'; message: string; icon?: React.ReactNode }[]>([])
+  const showToast = (type: 'success' | 'error' | 'warning' | 'info', message: string, icon?: React.ReactNode) => {
+    const id = Date.now()
+    setToasts(prev => [...prev, { id, type, message, icon }])
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000)
+  }
+
   const handleManageSubscription = (subscription: Subscription) => {
     console.log("[v0] Managing subscription:", subscription.id)
     setSelectedSubscription(subscription)
@@ -118,7 +126,7 @@ export function BillingManagement() {
   const handleDownloadInvoice = (transaction: Transaction) => {
     console.log("[v0] Downloading invoice for transaction:", transaction.id)
     // Simulate download
-    alert(`Downloading invoice for ${transaction.description}`)
+    showToast('info', `Downloading invoice for ${transaction.description}`, <Info size={16} />)
   }
 
   const handleCancelSubscription = (subscription: Subscription) => {
@@ -544,6 +552,40 @@ export function BillingManagement() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Toast Notifications */}
+      <div className="fixed top-4 right-4 z-100 flex flex-col gap-2 min-w-[320px] max-w-md">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            className={`
+              relative flex items-start gap-3 p-4 rounded-lg shadow-lg
+              backdrop-blur-xl border animate-in slide-in-from-right
+              ${toast.type === 'success' ? 'bg-linear-to-r from-[rgba(16,185,129,0.15)] to-[rgba(5,150,105,0.15)] border-green-500/50' : ''}
+              ${toast.type === 'error' ? 'bg-linear-to-r from-[rgba(239,68,68,0.15)] to-[rgba(220,38,38,0.15)] border-red-500/50' : ''}
+              ${toast.type === 'warning' ? 'bg-linear-to-r from-[rgba(245,158,11,0.15)] to-[rgba(217,119,6,0.15)] border-amber-500/50' : ''}
+              ${toast.type === 'info' ? 'bg-linear-to-r from-[rgba(59,130,246,0.15)] to-[rgba(37,99,235,0.15)] border-blue-500/50' : ''}
+            `}
+          >
+            <div className={`
+              flex items-center justify-center w-8 h-8 rounded-full shrink-0
+              ${toast.type === 'success' ? 'bg-linear-to-br from-green-500 to-green-600 shadow-[0_0_20px_rgba(16,185,129,0.5)]' : ''}
+              ${toast.type === 'error' ? 'bg-linear-to-br from-red-500 to-red-600 shadow-[0_0_20px_rgba(239,68,68,0.5)]' : ''}
+              ${toast.type === 'warning' ? 'bg-linear-to-br from-amber-500 to-amber-600 shadow-[0_0_20px_rgba(245,158,11,0.5)]' : ''}
+              ${toast.type === 'info' ? 'bg-linear-to-br from-blue-500 to-blue-600 shadow-[0_0_20px_rgba(59,130,246,0.5)]' : ''}
+            `}>
+              <span className="text-white">{toast.icon}</span>
+            </div>
+            <p className="flex-1 text-white font-medium text-sm leading-relaxed pt-1">{toast.message}</p>
+            <button
+              onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+              className="shrink-0 text-white/70 hover:text-white transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
