@@ -105,6 +105,33 @@ interface Progress {
   totalLessons: number;
 }
 
+// Helper function to extract YouTube video ID from URL
+const getYouTubeVideoId = (url: string): string | null => {
+  if (!url) return null;
+  
+  // Handle different YouTube URL formats
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/,
+    /youtube\.com\/embed\/([^&\s]+)/,
+    /youtube\.com\/v\/([^&\s]+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  
+  return null;
+};
+
+// Helper function to check if URL is a YouTube link
+const isYouTubeUrl = (url: string): boolean => {
+  if (!url) return false;
+  return url.includes('youtube.com') || url.includes('youtu.be');
+};
+
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
@@ -255,48 +282,54 @@ export default function LessonPage() {
 
   // Handle play button overlay visibility
   useEffect(() => {
-    const video = document.getElementById('lesson-video') as HTMLVideoElement;
-    const playOverlay = document.getElementById('play-overlay') as HTMLElement;
-    
-    if (!video || !playOverlay) return;
-
-    const handlePlay = () => {
-      playOverlay.style.opacity = '0';
-      setTimeout(() => {
-        playOverlay.style.display = 'none';
-      }, 300);
-    };
-
-    const handlePause = () => {
-      playOverlay.style.display = 'flex';
-      setTimeout(() => {
-        playOverlay.style.opacity = '1';
-      }, 10);
-    };
-
-    const handleClick = () => {
-      if (video.paused) {
-        video.play();
+    const initializePlayButton = () => {
+      const video = document.getElementById('lesson-video') as HTMLVideoElement;
+      const playOverlay = document.getElementById('play-overlay') as HTMLElement;
+      
+      if (!video || !playOverlay) {
+        setTimeout(initializePlayButton, 100);
+        return;
       }
-    };
 
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
-    video.addEventListener('ended', handlePause);
-    playOverlay.addEventListener('click', handleClick);
+      const handlePlay = () => {
+        playOverlay.style.opacity = '0';
+        setTimeout(() => {
+          playOverlay.style.display = 'none';
+        }, 300);
+      };
 
-    // Initial state - show overlay if video is paused
-    if (video.paused) {
+      const handlePause = () => {
+        playOverlay.style.display = 'flex';
+        setTimeout(() => {
+          playOverlay.style.opacity = '1';
+        }, 10);
+      };
+
+      const handleClick = () => {
+        if (video.paused) {
+          video.play();
+        }
+      };
+
+      video.addEventListener('play', handlePlay);
+      video.addEventListener('pause', handlePause);
+      video.addEventListener('ended', handlePause);
+      playOverlay.addEventListener('click', handleClick);
+
+      // Initial state - show overlay if video is paused
       playOverlay.style.display = 'flex';
       playOverlay.style.opacity = '1';
-    }
 
-    return () => {
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
-      video.removeEventListener('ended', handlePause);
-      playOverlay.removeEventListener('click', handleClick);
+      return () => {
+        video.removeEventListener('play', handlePlay);
+        video.removeEventListener('pause', handlePause);
+        video.removeEventListener('ended', handlePause);
+        playOverlay.removeEventListener('click', handleClick);
+      };
     };
+
+    const cleanup = initializePlayButton();
+    return cleanup;
   }, [lesson?.videoUrl]);
 
   const handleQuizSubmit = async () => {
@@ -343,10 +376,15 @@ export default function LessonPage() {
   };
 
   const handleMarkComplete = async () => {
-    if (!session?.user || !lessonId) return;
+    console.log('Mark as Complete clicked!', { session: !!session?.user, lessonId });
+    if (!session?.user || !lessonId) {
+      console.log('Cannot mark complete - missing session or lessonId');
+      return;
+    }
 
     try {
       const token = localStorage.getItem('token');
+      console.log('Sending mark complete request...');
       await fetch(`/api/progress/${courseId}`, {
         method: 'PUT',
         headers: { 
@@ -358,6 +396,7 @@ export default function LessonPage() {
         }),
       });
 
+      console.log('Lesson marked complete, refreshing progress...');
       // Refresh progress
       fetchLessonData();
     } catch (error) {
@@ -723,87 +762,104 @@ export default function LessonPage() {
                   <div className="relative bg-black group">
                     {/* Video Element */}
                     <div className="aspect-video relative">
-                      <video
-                        id="lesson-video"
-                        src={lesson.videoUrl}
-                        controlsList="nodownload"
-                        disablePictureInPicture
-                        onContextMenu={(e) => e.preventDefault()}
-                        controls
-                        className="w-full h-full object-cover rounded-2xl"
-                        onEnded={handleVideoEnd}
-                        style={{
-                          pointerEvents: 'auto'
-                        }}
-                      />
-                      
-                      {/* ALWAYS VISIBLE Glowing Play Button Overlay */}
-                      <div 
-                        id="play-overlay"
-                        className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-sm transition-opacity duration-500 rounded-2xl cursor-pointer"
-                        style={{ display: 'none', opacity: '0' }}
-                      >
-                        {/* Outer glow rings */}
-                        <div className="absolute">
-                          <div className="w-72 h-72 rounded-full bg-amber-500/10 blur-3xl animate-pulse"></div>
-                        </div>
-                        <div className="absolute">
-                          <div className="w-56 h-56 rounded-full bg-orange-500/20 blur-2xl animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                        </div>
-                        
-                        {/* Main play button */}
-                        <div className="relative z-10">
-                          {/* Animated ping effect */}
-                          <div className="absolute inset-0 flex items-center justify-center animate-ping">
-                            <div className="w-40 h-40 rounded-full bg-amber-500/40 blur-2xl"></div>
-                          </div>
+                      {isYouTubeUrl(lesson.videoUrl) ? (
+                        // YouTube Video Player
+                        <iframe
+                          src={`https://www.youtube.com/embed/${getYouTubeVideoId(lesson.videoUrl)}?rel=0&modestbranding=1&controls=1`}
+                          className="w-full h-full object-cover rounded-2xl"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          style={{
+                            border: 'none',
+                            pointerEvents: 'auto'
+                          }}
+                        />
+                      ) : (
+                        // Regular Video Player
+                        <>
+                          <video
+                            id="lesson-video"
+                            src={lesson.videoUrl}
+                            controlsList="nodownload"
+                            disablePictureInPicture
+                            onContextMenu={(e) => e.preventDefault()}
+                            controls
+                            className="w-full h-full object-cover rounded-2xl"
+                            onEnded={handleVideoEnd}
+                            style={{
+                              pointerEvents: 'auto'
+                            }}
+                          />
                           
-                          {/* Rotating ring */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-44 h-44 rounded-full border-4 border-amber-500/30 border-t-amber-400/60 animate-spin" style={{ animationDuration: '3s' }}></div>
-                          </div>
-                          
-                          {/* Pulse rings */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-36 h-36 rounded-full border-2 border-amber-400/40 animate-pulse"></div>
-                          </div>
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-32 h-32 rounded-full border border-orange-400/30 animate-ping" style={{ animationDuration: '2s' }}></div>
-                          </div>
-                          
-                          {/* Main button with gradient */}
-                          <div className="relative flex items-center justify-center w-28 h-28 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 shadow-2xl shadow-amber-500/60 ring-8 ring-amber-500/20 hover:scale-110 hover:shadow-amber-500/80 transition-all duration-500 cursor-pointer group-hover:ring-amber-500/40">
-                            {/* Inner glow */}
-                            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/20 to-transparent"></div>
-                            {/* Triangle Play Icon */}
-                            <div className="relative pl-2">
-                              <svg 
-                                width="48" 
-                                height="48" 
-                                viewBox="0 0 48 48" 
-                                fill="none" 
-                                className="drop-shadow-2xl"
-                                style={{ filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.8)) drop-shadow(0 0 40px rgba(251, 191, 36, 0.6))' }}
-                              >
-                                <path 
-                                  d="M12 8L38 24L12 40V8Z" 
-                                  fill="white"
-                                  className="animate-pulse"
-                                />
-                              </svg>
+                          {/* ALWAYS VISIBLE Glowing Play Button Overlay - Only for regular videos */}
+                          <div 
+                            id="play-overlay"
+                            className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-sm transition-opacity duration-500 rounded-2xl cursor-pointer"
+                            style={{ display: 'none', opacity: '0' }}
+                          >
+                            {/* Outer glow rings */}
+                            <div className="absolute">
+                              <div className="w-72 h-72 rounded-full bg-amber-500/10 blur-3xl animate-pulse"></div>
                             </div>
+                            <div className="absolute">
+                              <div className="w-56 h-56 rounded-full bg-orange-500/20 blur-2xl animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                            </div>
+                            
+                            {/* Main play button */}
+                            <div className="relative z-10">
+                              {/* Animated ping effect */}
+                              <div className="absolute inset-0 flex items-center justify-center animate-ping">
+                                <div className="w-40 h-40 rounded-full bg-amber-500/40 blur-2xl"></div>
+                              </div>
+                              
+                              {/* Rotating ring */}
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-44 h-44 rounded-full border-4 border-amber-500/30 border-t-amber-400/60 animate-spin" style={{ animationDuration: '3s' }}></div>
+                              </div>
+                              
+                              {/* Pulse rings */}
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-36 h-36 rounded-full border-2 border-amber-400/40 animate-pulse"></div>
+                              </div>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-32 h-32 rounded-full border border-orange-400/30 animate-ping" style={{ animationDuration: '2s' }}></div>
+                              </div>
+                              
+                              {/* Main button with gradient */}
+                              <div className="relative flex items-center justify-center w-28 h-28 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 shadow-2xl shadow-amber-500/60 ring-8 ring-amber-500/20 hover:scale-110 hover:shadow-amber-500/80 transition-all duration-500 cursor-pointer group-hover:ring-amber-500/40">
+                                {/* Inner glow */}
+                                <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/20 to-transparent"></div>
+                                {/* Triangle Play Icon */}
+                                <div className="relative pl-2">
+                                  <svg 
+                                    width="48" 
+                                    height="48" 
+                                    viewBox="0 0 48 48" 
+                                    fill="none" 
+                                    className="drop-shadow-2xl"
+                                    style={{ filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.8)) drop-shadow(0 0 40px rgba(251, 191, 36, 0.6))' }}
+                                  >
+                                    <path 
+                                      d="M12 8L38 24L12 40V8Z" 
+                                      fill="white"
+                                      className="animate-pulse"
+                                    />
+                                  </svg>
+                                </div>
+                              </div>
+                              
+                              {/* Bottom glow reflection */}
+                              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-32 h-8 bg-gradient-to-b from-amber-500/40 to-transparent blur-xl rounded-full"></div>
+                            </div>
+                            
+                            {/* Floating particles */}
+                            <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/60 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
+                            <div className="absolute top-1/3 right-1/4 w-1.5 h-1.5 bg-orange-400/60 rounded-full animate-ping" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>
+                            <div className="absolute bottom-1/3 left-1/3 w-1 h-1 bg-amber-300/60 rounded-full animate-ping" style={{ animationDuration: '3.5s', animationDelay: '1s' }}></div>
+                            <div className="absolute bottom-1/4 right-1/3 w-2 h-2 bg-orange-300/60 rounded-full animate-ping" style={{ animationDuration: '4.5s', animationDelay: '1.5s' }}></div>
                           </div>
-                          
-                          {/* Bottom glow reflection */}
-                          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-32 h-8 bg-gradient-to-b from-amber-500/40 to-transparent blur-xl rounded-full"></div>
-                        </div>
-                        
-                        {/* Floating particles */}
-                        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/60 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
-                        <div className="absolute top-1/3 right-1/4 w-1.5 h-1.5 bg-orange-400/60 rounded-full animate-ping" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>
-                        <div className="absolute bottom-1/3 left-1/3 w-1 h-1 bg-amber-300/60 rounded-full animate-ping" style={{ animationDuration: '3.5s', animationDelay: '1s' }}></div>
-                        <div className="absolute bottom-1/4 right-1/3 w-2 h-2 bg-orange-300/60 rounded-full animate-ping" style={{ animationDuration: '4.5s', animationDelay: '1.5s' }}></div>
-                      </div>
+                        </>
+                      )}
                       
                       {/* Completion Badge */}
                       {videoCompleted && (
@@ -914,7 +970,12 @@ export default function LessonPage() {
 
                 {!isCompleted && !lesson.quiz && (
                   <Button 
-                    onClick={handleMarkComplete} 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Button clicked!');
+                      handleMarkComplete();
+                    }}
                     className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-7 text-lg shadow-2xl shadow-green-500/30 hover:shadow-green-500/50 hover:scale-[1.02] transition-all duration-300 rounded-xl group"
                   >
                     <CheckCircle className="mr-2 h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />

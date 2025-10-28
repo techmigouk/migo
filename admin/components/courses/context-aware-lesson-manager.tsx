@@ -292,7 +292,8 @@ export function ContextAwareLessonManager({ courseId, courseName, onBack }: Cont
       if (lessonForm.videoType === "upload" && uploadedVideoUrl) {
         lessonData.videoUrl = uploadedVideoUrl
       } else if (lessonForm.videoType === "youtube" && lessonForm.youtubeUrl) {
-        lessonData.youtubeUrl = lessonForm.youtubeUrl
+        lessonData.videoUrl = lessonForm.youtubeUrl  // Save YouTube URL to videoUrl field
+        lessonData.youtubeUrl = lessonForm.youtubeUrl // Keep for backwards compatibility
       }
 
       const url = editingLesson 
@@ -301,6 +302,8 @@ export function ContextAwareLessonManager({ courseId, courseName, onBack }: Cont
       
       const method = editingLesson ? 'PUT' : 'POST'
       
+      console.log('Saving lesson with data:', lessonData)
+      
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -308,8 +311,11 @@ export function ContextAwareLessonManager({ courseId, courseName, onBack }: Cont
       })
 
       const data = await response.json()
+      
+      console.log('API Response:', { status: response.status, data })
 
       if (!response.ok) {
+        console.error('Failed to save lesson:', data)
         throw new Error(data.error || 'Failed to save lesson')
       }
 
