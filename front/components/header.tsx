@@ -86,18 +86,22 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link
-                  href="/login"
+                <a
+                  href={process.env.NODE_ENV === 'production' 
+                    ? 'https://app.techmigo.co.uk/login' 
+                    : 'http://localhost:3004/login'}
                   className="px-4 py-2 border border-[#f59e0b] text-[#f59e0b] rounded-lg hover:bg-[#f59e0b]/10 transition-all duration-300"
                 >
                   Sign In
-                </Link>
-                <Link
-                  href="/signup"
+                </a>
+                <a
+                  href={process.env.NODE_ENV === 'production' 
+                    ? 'https://app.techmigo.co.uk/signup' 
+                    : 'http://localhost:3004/signup'}
                   className="px-4 py-2 bg-[#f59e0b] text-[#0a1f44] font-semibold rounded-lg hover:bg-[#fbbf24] transition-all duration-300"
                 >
                   Get Started Free
-                </Link>
+                </a>
               </>
             )}
           </div>
@@ -148,20 +152,24 @@ export default function Header() {
                   </>
                 ) : (
                   <>
-                    <Link
-                      href="/login"
+                    <a
+                      href={process.env.NODE_ENV === 'production' 
+                        ? 'https://app.techmigo.co.uk/login' 
+                        : 'http://localhost:3004/login'}
                       className="px-4 py-2 border border-[#f59e0b] text-[#f59e0b] rounded-lg text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign In
-                    </Link>
-                    <Link
-                      href="/signup"
+                    </a>
+                    <a
+                      href={process.env.NODE_ENV === 'production' 
+                        ? 'https://app.techmigo.co.uk/signup' 
+                        : 'http://localhost:3004/signup'}
                       className="px-4 py-2 bg-[#f59e0b] text-[#0a1f44] font-semibold rounded-lg text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Get Started Free
-                    </Link>
+                    </a>
                   </>
                 )}
               </div>

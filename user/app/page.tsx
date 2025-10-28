@@ -874,12 +874,8 @@ export default function UserDashboard() {
     localStorage.removeItem("user")
     localStorage.removeItem("token")
     
-    // Redirect to login page - use production URL in production
-    const loginUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://techmigo.co.uk/login'
-      : 'http://localhost:3000/login'
-    
-    window.location.href = loginUrl
+    // Redirect to user app login page
+    window.location.href = '/login'
   }
 
   const isPro = userStats.subscriptionTier === "Pro"
@@ -4779,11 +4775,8 @@ export default function UserDashboard() {
       localStorage.removeItem("user")
       localStorage.removeItem("token")
       
-      // Redirect to login page (production-aware)
-      const loginUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://techmigo.co.uk/login'
-        : 'http://localhost:3000/login'
-      window.location.href = loginUrl
+      // Redirect to user app login page
+      window.location.href = '/login'
     }
 
     return (
