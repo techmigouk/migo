@@ -120,6 +120,7 @@ export default async function HomePage() {
             {[
               { id: 'tesco', text: 'TESCO', color: '#E60000' },
               { id: 'hsbc', text: 'HSBC', color: '#DB0011' },
+              { id: 'barclays', text: 'BARCLAYS', color: '#00AEEF' },
               { id: 'bp', text: 'BP', color: '#009B3A' },
               { id: 'unilever', text: 'UNILEVER', color: '#0072CE' },
               { id: 'gsk', text: 'GSK', color: '#FF6A00' },
