@@ -74,7 +74,8 @@ export default async function HomePage() {
   ]
 
   return (
-    <div className="bg-linear-to-b from-[#0a1f44] to-[#121826]">
+    <div className="bg-gradient-to-b from-[#0a1f44] to-[#121826]">
+      {/*    <div className="bg-linear-to-b from-[#0a1f44] to-[#121826]">
       {/* Hero Section */}
   <section className="container mx-auto px-4 py-12 md:py-20">
         <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -120,7 +121,6 @@ export default async function HomePage() {
             {[
               { id: 'tesco', text: 'TESCO', color: '#E60000' },
               { id: 'hsbc', text: 'HSBC', color: '#DB0011' },
-              { id: 'barclays', text: 'BARCLAYS', color: '#00AEEF' },
               { id: 'bp', text: 'BP', color: '#009B3A' },
               { id: 'unilever', text: 'UNILEVER', color: '#0072CE' },
               { id: 'gsk', text: 'GSK', color: '#FF6A00' },
@@ -270,12 +270,14 @@ export default async function HomePage() {
       </section>
 
       {/* Final CTA */}
-  <section className="bleed bg-linear-to-r from-[#f59e0b] to-[#fbbf24] py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-[#0a1f44] mb-4">
-            Start Learning Today — Your Portfolio Awaits
+      <section className="bleed bg-linear-to-r from-[#f59e0b] to-[#fbbf24] py-20">
+        <div className="max-w-4xl mx-auto text-center px-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Start Your Journey Today
           </h2>
-          <p className="text-[#0a1f44] text-lg mb-8">No credit card required. Cancel anytime.</p>
+          <p className="text-xl text-white mb-8">
+            Join thousands of students learning to code. No credit card required. Cancel anytime.
+          </p>
           <Link
             href="/signup"
             className="join-cta relative inline-block"

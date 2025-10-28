@@ -107,7 +107,7 @@ export function ContextAwareLessonManager({ courseId, courseName, onBack }: Cont
     try {
       setLoading(true)
       setError("")
-      const response = await fetch(`/api/courses/${courseId}/lessons`)
+      const response = await fetch(`/api/lessons?courseId=${courseId}`)
       const data = await response.json()
       
       if (!response.ok) {
@@ -297,7 +297,7 @@ export function ContextAwareLessonManager({ courseId, courseName, onBack }: Cont
 
       const url = editingLesson 
         ? `/api/lessons/${editingLesson._id}`
-        : `/api/courses/${courseId}/lessons`
+        : `/api/lessons`
       
       const method = editingLesson ? 'PUT' : 'POST'
       
