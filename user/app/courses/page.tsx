@@ -31,6 +31,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 
 interface Course {
   _id: string
+  courseId: string // Alias for _id to maintain consistency
   title: string
   description: string
   category: string
@@ -135,31 +136,44 @@ export default function CoursesPage() {
       setLoading(true)
       const token = localStorage.getItem('token')
 
+      console.log('Fetching courses from /api/courses...')
+      
       // Fetch courses
       const coursesResponse = await fetch('/api/courses', {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       })
+      
+      console.log('Courses response status:', coursesResponse.status)
       
       if (!coursesResponse.ok) {
         throw new Error('Failed to fetch courses')
       }
 
       const coursesData = await coursesResponse.json()
-      setCourses(coursesData.courses || [])
+      console.log('Fetched courses:', coursesData.courses?.length || 0, 'courses')
+      
+      const mappedCourses = (coursesData.courses || []).map((course: any) => ({
+        ...course,
+        courseId: course._id // Add courseId alias
+      }))
+      setCourses(mappedCourses)
 
       // Fetch enrollments if logged in
       if (token) {
+        console.log('Fetching enrollments...')
         const enrollmentsResponse = await fetch('/api/enrollments', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
 
         if (enrollmentsResponse.ok) {
           const enrollmentsData = await enrollmentsResponse.json()
+          console.log('Fetched enrollments:', Object.keys(enrollmentsData.enrollments || {}).length)
           setEnrollments(enrollmentsData.enrollments || {})
         }
       }
     } catch (error) {
       console.error('Error fetching data:', error)
+      alert('Failed to load courses. Please check your database connection.')
     } finally {
       setLoading(false)
     }
@@ -181,9 +195,9 @@ export default function CoursesPage() {
     }
 
     try {
-      setEnrolling(course._id)
+      setEnrolling(course.courseId)
 
-      const response = await fetch(`/api/courses/${course._id}/enroll`, {
+      const response = await fetch(`/api/courses/${course.courseId}/enroll`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -202,7 +216,7 @@ export default function CoursesPage() {
       await fetchCoursesAndEnrollments()
 
       // Redirect to course page
-      router.push(`/courses/${course._id}`)
+      router.push(`/courses/${course.courseId}`)
     } catch (error) {
       console.error('Error enrolling:', error)
       alert(error instanceof Error ? error.message : 'Failed to enroll in course')
@@ -212,11 +226,11 @@ export default function CoursesPage() {
   }
 
   const handleCourseClick = (course: Course) => {
-    const enrollment = enrollments[course._id]
+    const enrollment = enrollments[course.courseId]
     
     if (enrollment) {
       // Already enrolled - go to course page
-      router.push(`/courses/${course._id}`)
+      router.push(`/courses/${course.courseId}`)
     } else {
       // Not enrolled - show preview modal
       setSelectedCourse(course)
@@ -343,18 +357,45 @@ export default function CoursesPage() {
 
       {/* Course Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {filteredCourses.length === 0 ? (
+        {courses.length === 0 && !loading ? (
           <Card className="bg-gray-800 border-gray-700">
             <CardContent className="p-12 text-center">
               <BookOpen className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">No courses found</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">No courses available yet</h3>
+              <p className="text-gray-400 mb-4">
+                Courses haven't been added to the database yet, or there are no published courses.
+              </p>
+              <p className="text-sm text-gray-500">
+                Please check that:
+                <br />• MongoDB is running
+                <br />• Courses have been created in the Admin dashboard
+                <br />• Courses are marked as "Published"
+              </p>
+            </CardContent>
+          </Card>
+        ) : filteredCourses.length === 0 ? (
+          <Card className="bg-gray-800 border-gray-700">
+            <CardContent className="p-12 text-center">
+              <BookOpen className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">No courses match your filters</h3>
               <p className="text-gray-400">Try adjusting your filters or search query</p>
+              <Button
+                className="mt-4 bg-amber-500 hover:bg-amber-600 text-gray-900"
+                onClick={() => {
+                  setSearchQuery('')
+                  setCategoryFilter('all')
+                  setLevelFilter('all')
+                  setPriceFilter('all')
+                }}
+              >
+                Clear All Filters
+              </Button>
             </CardContent>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map((course) => {
-              const enrollment = enrollments[course._id]
+              const enrollment = enrollments[course.courseId]
               const isEnrolled = !!enrollment
               const isCompleted = enrollment?.status === 'completed'
               const isPaid = course.price > 0
@@ -365,7 +406,7 @@ export default function CoursesPage() {
 
               return (
                 <Card
-                  key={course._id}
+                  key={course.courseId}
                   className="bg-gray-800 border-gray-700 overflow-hidden hover:border-amber-500 transition-all duration-300 cursor-pointer group"
                   onClick={() => handleCourseClick(course)}
                 >
@@ -485,7 +526,7 @@ export default function CoursesPage() {
                           className="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-semibold"
                           onClick={(e) => {
                             e.stopPropagation()
-                            router.push(`/courses/${course._id}`)
+                            router.push(`/courses/${course.courseId}`)
                           }}
                         >
                           <Play className="mr-2" size={16} />
@@ -494,13 +535,13 @@ export default function CoursesPage() {
                       ) : canAccess ? (
                         <Button
                           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                          disabled={enrolling === course._id}
+                          disabled={enrolling === course.courseId}
                           onClick={(e) => {
                             e.stopPropagation()
                             handleEnroll(course)
                           }}
                         >
-                          {enrolling === course._id ? (
+                          {enrolling === course.courseId ? (
                             <>
                               <Loader2 className="mr-2 animate-spin" size={16} />
                               Enrolling...
@@ -607,13 +648,13 @@ export default function CoursesPage() {
                 {/* Enroll Button */}
                 <Button
                   className="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold text-lg py-6"
-                  disabled={enrolling === selectedCourse._id}
+                  disabled={enrolling === selectedCourse.courseId}
                   onClick={() => {
                     handleEnroll(selectedCourse)
                     setShowPreviewModal(false)
                   }}
                 >
-                  {enrolling === selectedCourse._id ? (
+                  {enrolling === selectedCourse.courseId ? (
                     <>
                       <Loader2 className="mr-2 animate-spin" size={20} />
                       Enrolling...
