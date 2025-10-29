@@ -914,10 +914,10 @@ export default function LessonPage() {
 
             {/* Lesson Content Tabs */}
             <Tabs defaultValue="content" className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700 delay-400">
-              <TabsList className="w-full justify-start bg-gradient-to-r from-gray-800 via-gray-800/95 to-gray-800 border border-gray-700/50 p-1.5 rounded-xl shadow-xl backdrop-blur-sm">
+              <TabsList className="w-full justify-start bg-gradient-to-r from-gray-700 via-gray-700/95 to-gray-700 border border-gray-600/50 p-1.5 rounded-xl shadow-xl backdrop-blur-sm">
                 <TabsTrigger 
                   value="content" 
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold text-gray-100"
                 >
                   <BookOpen className="mr-2 h-4 w-4" />
                   Notes
@@ -925,7 +925,7 @@ export default function LessonPage() {
                 {lesson.codeSnippets && lesson.codeSnippets.length > 0 && (
                   <TabsTrigger 
                     value="code" 
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold text-gray-100"
                   >
                     <Code className="mr-2 h-4 w-4" />
                     Code Examples
@@ -934,7 +934,7 @@ export default function LessonPage() {
                 {lesson.resources && lesson.resources.length > 0 && (
                   <TabsTrigger 
                     value="resources" 
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold text-gray-100"
                   >
                     <FileDown className="mr-2 h-4 w-4" />
                     Resources
@@ -943,7 +943,7 @@ export default function LessonPage() {
                 {lesson.quiz && (
                   <TabsTrigger 
                     value="quiz" 
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold text-gray-100"
                   >
                     <Award className="mr-2 h-4 w-4" />
                     Smart Quiz
@@ -951,7 +951,7 @@ export default function LessonPage() {
                 )}
                 <TabsTrigger 
                   value="qa" 
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:scale-105 transition-all duration-300 rounded-lg font-semibold text-gray-100"
                 >
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Q&A ({questions.length})
@@ -960,11 +960,11 @@ export default function LessonPage() {
 
               {/* Notes Tab */}
               <TabsContent value="content" className="space-y-4 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <Card className="p-8 bg-gradient-to-br from-gray-800 via-gray-800/95 to-gray-800 border border-gray-700/50 shadow-2xl hover:shadow-amber-500/10 transition-all duration-500 rounded-2xl group">
+                <Card className="p-8 bg-gradient-to-br from-gray-700 via-gray-700/95 to-gray-700 border border-gray-600/50 shadow-2xl hover:shadow-amber-500/10 transition-all duration-500 rounded-2xl group">
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl"></div>
                   <div 
-                    className="prose prose-sm max-w-none prose-invert prose-headings:text-white prose-headings:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-strong:text-white prose-strong:font-semibold prose-li:text-gray-300 prose-a:text-amber-400 hover:prose-a:text-amber-300 prose-a:transition-colors prose-a:duration-300 relative"
-                    dangerouslySetInnerHTML={{ __html: lesson.content || '<p class="text-gray-400">No content available for this lesson.</p>' }}
+                    className="prose prose-sm max-w-none prose-invert prose-headings:text-white prose-headings:font-bold prose-p:text-gray-100 prose-p:leading-relaxed prose-strong:text-white prose-strong:font-semibold prose-li:text-gray-100 prose-a:text-amber-400 hover:prose-a:text-amber-300 prose-a:transition-colors prose-a:duration-300 relative"
+                    dangerouslySetInnerHTML={{ __html: lesson.content || '<p class="text-gray-200">No content available for this lesson.</p>' }}
                   />
                 </Card>
 
@@ -988,7 +988,7 @@ export default function LessonPage() {
               {lesson.codeSnippets && lesson.codeSnippets.length > 0 && (
                 <TabsContent value="code" className="space-y-4 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   {lesson.codeSnippets.map((snippet, index) => (
-                    <Card key={index} className="p-6 bg-gradient-to-br from-gray-800 via-gray-800/95 to-gray-800 border border-gray-700/50 shadow-xl hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-500 rounded-2xl group animate-in fade-in zoom-in-95 duration-500" style={{ animationDelay: `${index * 100}ms` }}>
+                    <Card key={index} className="p-6 bg-gradient-to-br from-gray-700 via-gray-700/95 to-gray-700 border border-gray-600/50 shadow-xl hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-500 rounded-2xl group animate-in fade-in zoom-in-95 duration-500" style={{ animationDelay: `${index * 100}ms` }}>
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl"></div>
                       {snippet.title && (
                         <h3 className="font-bold mb-4 text-white flex items-center gap-2 text-lg relative group-hover:text-amber-400 transition-colors duration-300">
@@ -1002,7 +1002,7 @@ export default function LessonPage() {
                         {snippet.language}
                       </Badge>
                       <pre className="bg-gradient-to-br from-gray-900 via-gray-900/95 to-black border border-gray-700/50 p-5 rounded-xl overflow-x-auto shadow-inner relative group-hover:border-amber-500/20 transition-all duration-500">
-                        <code className="text-gray-300 text-sm font-mono">{snippet.code}</code>
+                        <code className="text-gray-100 text-sm font-mono">{snippet.code}</code>
                       </pre>
                     </Card>
                   ))}
@@ -1012,14 +1012,14 @@ export default function LessonPage() {
               {/* Resources Tab */}
               {lesson.resources && lesson.resources.length > 0 && (
                 <TabsContent value="resources" className="space-y-4 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <Card className="divide-y divide-gray-700/50 bg-gradient-to-br from-gray-800 via-gray-800/95 to-gray-800 border border-gray-700/50 shadow-2xl rounded-2xl overflow-hidden">
+                  <Card className="divide-y divide-gray-600/50 bg-gradient-to-br from-gray-700 via-gray-700/95 to-gray-700 border border-gray-600/50 shadow-2xl rounded-2xl overflow-hidden">
                     {lesson.resources.map((resource, index) => (
                       <a
                         key={index}
                         href={resource.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between p-5 hover:bg-gradient-to-r hover:from-gray-700/30 hover:via-amber-500/5 hover:to-gray-700/30 transition-all duration-500 group relative overflow-hidden animate-in fade-in slide-in-from-left-2 duration-500"
+                        className="flex items-center justify-between p-5 hover:bg-gradient-to-r hover:from-gray-600/30 hover:via-amber-500/5 hover:to-gray-600/30 transition-all duration-500 group relative overflow-hidden animate-in fade-in slide-in-from-left-2 duration-500"
                         style={{ animationDelay: `${index * 75}ms` }}
                       >
                         {/* Hover glow effect */}
@@ -1031,10 +1031,10 @@ export default function LessonPage() {
                           </div>
                           <div>
                             <p className="font-semibold text-white group-hover:text-amber-400 transition-colors duration-300">{resource.title}</p>
-                            <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">{resource.type}</p>
+                            <p className="text-sm text-gray-200 group-hover:text-gray-100 transition-colors duration-300">{resource.type}</p>
                           </div>
                         </div>
-                        <ExternalLink className="h-5 w-5 text-gray-400 group-hover:text-amber-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 relative" />
+                        <ExternalLink className="h-5 w-5 text-gray-300 group-hover:text-amber-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 relative" />
                       </a>
                     ))}
                   </Card>
@@ -1044,7 +1044,7 @@ export default function LessonPage() {
               {/* Quiz Tab */}
               {lesson.quiz && (
                 <TabsContent value="quiz" className="space-y-6 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <Card className="p-8 bg-gradient-to-br from-gray-800 via-gray-800/95 to-gray-800 border border-gray-700/50 shadow-2xl rounded-2xl relative overflow-hidden group">
+                  <Card className="p-8 bg-gradient-to-br from-gray-700 via-gray-700/95 to-gray-700 border border-gray-600/50 shadow-2xl rounded-2xl relative overflow-hidden group">
                     {/* Animated background */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                     
@@ -1125,7 +1125,7 @@ export default function LessonPage() {
                     ) : (
                       <div className="space-y-6 relative">
                         {lesson.quiz.questions.map((q, qIndex) => (
-                          <div key={qIndex} className="space-y-4 p-6 bg-gradient-to-br from-gray-900/60 to-gray-800/60 rounded-2xl border border-gray-700/50 shadow-lg hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-500 group animate-in fade-in slide-in-from-left-2 duration-500" style={{ animationDelay: `${qIndex * 100}ms` }}>
+                          <div key={qIndex} className="space-y-4 p-6 bg-gradient-to-br from-gray-800/60 to-gray-700/60 rounded-2xl border border-gray-600/50 shadow-lg hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-500 group animate-in fade-in slide-in-from-left-2 duration-500" style={{ animationDelay: `${qIndex * 100}ms` }}>
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
                             
                             <p className="font-semibold text-white flex items-start gap-3 text-base relative">
@@ -1141,13 +1141,13 @@ export default function LessonPage() {
                                   className={`flex items-center gap-4 p-5 rounded-xl border-2 cursor-pointer transition-all duration-500 group/option ${
                                     quizAnswers[qIndex] === oIndex
                                       ? 'bg-gradient-to-r from-amber-500/25 to-orange-500/25 border-amber-500/60 shadow-2xl shadow-amber-500/30 scale-[1.02]'
-                                      : 'bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50 hover:from-gray-700/60 hover:to-gray-800/60 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/10'
+                                      : 'bg-gradient-to-br from-gray-700/50 to-gray-800/50 border-gray-600/50 hover:from-gray-600/60 hover:to-gray-700/60 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/10'
                                   }`}
                                 >
                                   <div className={`relative flex items-center justify-center w-5 h-5 rounded-full border-2 transition-all duration-300 ${
                                     quizAnswers[qIndex] === oIndex
                                       ? 'border-amber-400 bg-amber-400 shadow-lg shadow-amber-400/50'
-                                      : 'border-gray-500 group-hover/option:border-amber-400'
+                                      : 'border-gray-400 group-hover/option:border-amber-400'
                                   }`}>
                                     {quizAnswers[qIndex] === oIndex && (
                                       <div className="w-2.5 h-2.5 rounded-full bg-gray-900 animate-in zoom-in-50 duration-200"></div>
@@ -1166,7 +1166,7 @@ export default function LessonPage() {
                                   <span className={`flex-1 transition-colors duration-300 ${
                                     quizAnswers[qIndex] === oIndex
                                       ? 'text-white font-semibold'
-                                      : 'text-gray-300 group-hover/option:text-white'
+                                      : 'text-gray-100 group-hover/option:text-white'
                                   }`}>{option}</span>
                                 </label>
                               ))}
@@ -1395,12 +1395,12 @@ export default function LessonPage() {
                           navigateToLesson(l._id);
                         }
                       }}
-                      className={`relative w-full text-left p-4 rounded-xl border-2 transition-all duration-500 group overflow-hidden animate-in fade-in slide-in-from-right-2 ${
+                      className={`relative w-full text-left p-3 rounded-lg border transition-all duration-500 group overflow-hidden animate-in fade-in slide-in-from-right-2 ${
                         current
-                          ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-gray-900 border-amber-400 shadow-2xl shadow-amber-500/40 scale-105'
+                          ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-gray-900 border-amber-400 shadow-lg shadow-amber-500/40 scale-[1.02]'
                           : locked
-                          ? 'bg-gray-900/50 border-gray-700/50 cursor-pointer hover:bg-gray-800/70 hover:border-gray-600 hover:shadow-lg'
-                          : 'bg-gradient-to-br from-gray-900/40 to-gray-800/40 border-gray-700/50 hover:from-gray-800/60 hover:to-gray-700/60 hover:border-amber-500/30 hover:shadow-xl hover:shadow-amber-500/10 hover:scale-[1.02]'
+                          ? 'bg-gray-900/50 border-gray-700/50 cursor-pointer hover:bg-gray-800/70 hover:border-gray-600 hover:shadow-md'
+                          : 'bg-gradient-to-br from-gray-900/40 to-gray-800/40 border-gray-700/50 hover:from-gray-800/60 hover:to-gray-700/60 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/10'
                       }`}
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
@@ -1414,34 +1414,34 @@ export default function LessonPage() {
                         <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10 animate-pulse"></div>
                       )}
                       
-                      <div className="flex items-start justify-between gap-3 relative">
+                      <div className="flex items-start justify-between gap-2 relative">
                         <div className="flex-1 min-w-0">
-                          <p className={`text-xs mb-1.5 font-semibold ${current ? 'text-gray-800' : 'text-gray-500 group-hover:text-amber-400 transition-colors duration-300'}`}>
+                          <p className={`text-xs mb-1 font-medium ${current ? 'text-gray-800' : 'text-gray-500 group-hover:text-amber-400 transition-colors duration-300'}`}>
                             Lesson {l.order}
                           </p>
-                          <p className={`text-sm font-semibold line-clamp-2 ${current ? 'text-gray-900' : 'text-gray-300 group-hover:text-white transition-colors duration-300'}`}>
+                          <p className={`text-xs font-medium line-clamp-2 leading-snug ${current ? 'text-gray-900' : 'text-gray-300 group-hover:text-white transition-colors duration-300'}`}>
                             {l.title}
                           </p>
                         </div>
                         <div className="shrink-0">
                           {completed ? (
                             <div className="relative">
-                              <CheckCircle className="h-5 w-5 text-green-400 animate-in zoom-in-50 duration-500" />
+                              <CheckCircle className="h-4 w-4 text-green-400 animate-in zoom-in-50 duration-500" />
                               <div className="absolute inset-0 bg-green-400/30 rounded-full blur animate-pulse"></div>
                             </div>
                           ) : current ? (
                             <div className="relative">
-                              <PlayCircle className="h-5 w-5 text-gray-900 animate-pulse" />
+                              <PlayCircle className="h-4 w-4 text-gray-900 animate-pulse" />
                             </div>
                           ) : unlocked ? (
                             <div className="relative">
-                              <PlayCircle className="h-5 w-5 text-red-500 group-hover:text-red-400 transition-colors duration-300" />
+                              <PlayCircle className="h-4 w-4 text-red-500 group-hover:text-red-400 transition-colors duration-300" />
                               <div className="absolute inset-0 bg-red-500/20 rounded-full blur group-hover:bg-red-400/30 transition-all duration-300"></div>
                             </div>
                           ) : locked ? (
-                            <Lock className="h-4 w-4 text-gray-600 group-hover:text-gray-500 transition-colors duration-300" />
+                            <Lock className="h-3.5 w-3.5 text-gray-600 group-hover:text-gray-500 transition-colors duration-300" />
                           ) : (
-                            <div className="w-4 h-4 rounded-full border-2 border-gray-600 group-hover:border-amber-400 group-hover:shadow-lg group-hover:shadow-amber-400/30 transition-all duration-300" />
+                            <div className="w-3.5 h-3.5 rounded-full border-2 border-gray-600 group-hover:border-amber-400 group-hover:shadow-lg group-hover:shadow-amber-400/30 transition-all duration-300" />
                           )}
                         </div>
                       </div>
