@@ -54,6 +54,13 @@ interface Course {
   projectTitle?: string
   projectDescription?: string
   projectMedia?: string
+  introVideoUrl?: string
+  hasCertificate?: boolean
+  whatYouWillLearn?: string[]
+  courseCurriculum?: Array<{
+    section: string
+    lectures: Array<{ title: string; duration: string }>
+  }>
   createdAt?: Date
   updatedAt?: Date
 }
@@ -77,12 +84,26 @@ export function CourseLibrary() {
   const projectTitleRef = useRef<HTMLInputElement>(null)
   const projectDescriptionRef = useRef<HTMLTextAreaElement>(null)
   const thumbnailRef = useRef<HTMLInputElement>(null)
+  const introVideoRef = useRef<HTMLInputElement>(null)
+  const projectMediaRef = useRef<HTMLInputElement>(null)
+  const durationRef = useRef<HTMLInputElement>(null)
+  const lessonsCountRef = useRef<HTMLInputElement>(null)
   const [selectedCategory, setSelectedCategory] = useState("Frontend Development")
   const [selectedLevel, setSelectedLevel] = useState<"beginner" | "intermediate" | "advanced">("beginner")
   const [selectedStatus, setSelectedStatus] = useState<"draft" | "published" | "archived">("draft")
   const [selectedAccessType, setSelectedAccessType] = useState<"Free" | "Premium">("Free")
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("")
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false)
+  const [introVideoUrl, setIntroVideoUrl] = useState<string>("")
+  const [uploadingIntroVideo, setUploadingIntroVideo] = useState(false)
+  const [projectMediaUrl, setProjectMediaUrl] = useState<string>("")
+  const [uploadingProjectMedia, setUploadingProjectMedia] = useState(false)
+  const [hasCertificate, setHasCertificate] = useState<boolean>(true)
+  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([''])
+  const [courseCurriculum, setCourseCurriculum] = useState<Array<{
+    section: string
+    lectures: Array<{ title: string; duration: string }>
+  }>>([{ section: '', lectures: [{ title: '', duration: '' }] }])
 
   // Toast Notification System
   const [toasts, setToasts] = useState<Array<{id: number, type: 'success' | 'error' | 'warning' | 'info', message: string, icon?: React.ReactNode}>>([])
@@ -184,6 +205,100 @@ export function CourseLibrary() {
     }
   }
 
+  const handleIntroVideoChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('video/')) {
+      showToast('warning', 'Please select a video file', <Info size={16} />)
+      return
+    }
+
+    // Validate file size (max 100MB)
+    if (file.size > 100 * 1024 * 1024) {
+      showToast('warning', 'Video size should be less than 100MB', <Info size={16} />)
+      return
+    }
+
+    try {
+      setUploadingIntroVideo(true)
+      
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${adminToken}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.url) {
+        setIntroVideoUrl(data.url)
+        showToast('success', 'Intro video uploaded successfully!', <CheckCircle size={16} />)
+      } else {
+        showToast('error', 'Failed to upload video', <XCircle size={16} />)
+      }
+    } catch (error) {
+      console.error('Error uploading intro video:', error)
+      showToast('error', 'Error uploading video', <XCircle size={16} />)
+    } finally {
+      setUploadingIntroVideo(false)
+    }
+  }
+
+  const handleProjectMediaChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type (image or video)
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+      showToast('warning', 'Please select an image or video file', <Info size={16} />)
+      return
+    }
+
+    // Validate file size
+    const maxSize = file.type.startsWith('video/') ? 100 * 1024 * 1024 : 10 * 1024 * 1024
+    if (file.size > maxSize) {
+      const maxSizeMB = maxSize / (1024 * 1024)
+      showToast('warning', `File size should be less than ${maxSizeMB}MB`, <Info size={16} />)
+      return
+    }
+
+    try {
+      setUploadingProjectMedia(true)
+      
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${adminToken}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.url) {
+        setProjectMediaUrl(data.url)
+        showToast('success', 'Project media uploaded successfully!', <CheckCircle size={16} />)
+      } else {
+        showToast('error', 'Failed to upload file', <XCircle size={16} />)
+      }
+    } catch (error) {
+      console.error('Error uploading project media:', error)
+      showToast('error', 'Error uploading file', <XCircle size={16} />)
+    } finally {
+      setUploadingProjectMedia(false)
+    }
+  }
+
   const handleCreateCourse = async (): Promise<void> => {
     try {
       if (!titleRef.current?.value || !descriptionRef.current?.value) {
@@ -251,6 +366,10 @@ export function CourseLibrary() {
         return
       }
 
+      const courseId = editingCourse.id || editingCourse._id
+      console.log('📝 Updating course with ID:', courseId)
+      console.log('📝 Full course object:', editingCourse)
+
       const courseData = {
         title: titleRef.current.value,
         description: descriptionRef.current.value,
@@ -258,12 +377,24 @@ export function CourseLibrary() {
         level: selectedLevel,
         status: selectedStatus,
         price: selectedAccessType === "Premium" ? 9.99 : 0,
-        projectTitle: projectTitleRef.current?.value || undefined,
-        projectDescription: projectDescriptionRef.current?.value || undefined,
+        duration: durationRef.current?.value ? Number(durationRef.current.value) : editingCourse.duration || 0,
+        lessons: lessonsCountRef.current?.value ? Number(lessonsCountRef.current.value) : editingCourse.lessons || 0,
+        hasCertificate,
+        whatYouWillLearn: whatYouWillLearn.filter(item => item.trim() !== ''),
+        courseCurriculum: courseCurriculum.filter(section => 
+          section.section.trim() !== '' || section.lectures.some(l => l.title.trim() !== '')
+        ),
+        projectTitle: projectTitleRef.current?.value || editingCourse.projectTitle || '',
+        projectDescription: projectDescriptionRef.current?.value || editingCourse.projectDescription || '',
+        projectMedia: projectMediaUrl || editingCourse.projectMedia || '',
+        introVideoUrl: introVideoUrl || editingCourse.introVideoUrl || '',
         thumbnail: thumbnailPreview || editingCourse.thumbnail || '/placeholder.svg',
       }
 
-      const response = await fetch(`/api/courses/${editingCourse.id || editingCourse._id}`, {
+      const url = `/api/courses/${courseId}`
+      console.log('📝 Update URL:', url)
+
+      const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -272,7 +403,9 @@ export function CourseLibrary() {
         body: JSON.stringify(courseData)
       })
       
+      console.log('📝 Response status:', response.status)
       const data = await response.json()
+      console.log('📝 Response data:', data)
 
       if (data.success) {
         showToast('success', 'Course updated successfully!', <CheckCircle size={16} />)
@@ -307,6 +440,14 @@ export function CourseLibrary() {
     setSelectedStatus(course.status)
     setSelectedAccessType((course.price || 0) > 0 ? "Premium" : "Free")
     setThumbnailPreview(course.thumbnail || '')
+    setIntroVideoUrl(course.introVideoUrl || '')
+    setProjectMediaUrl(course.projectMedia || '')
+    setHasCertificate(course.hasCertificate !== false)
+    setWhatYouWillLearn(course.whatYouWillLearn && course.whatYouWillLearn.length > 0 ? course.whatYouWillLearn : [''])
+    setCourseCurriculum(course.courseCurriculum && course.courseCurriculum.length > 0 
+      ? course.courseCurriculum 
+      : [{ section: '', lectures: [{ title: '', duration: '' }] }]
+    )
     setShowCreateCourseDialog(true)
   }
 
@@ -722,7 +863,14 @@ export function CourseLibrary() {
           // Reset form when closing
           setEditingCourse(null)
           setThumbnailPreview('')
+          setIntroVideoUrl('')
+          setProjectMediaUrl('')
+          setHasCertificate(true)
+          setWhatYouWillLearn([''])
+          setCourseCurriculum([{ section: '', lectures: [{ title: '', duration: '' }] }])
           if (thumbnailRef.current) thumbnailRef.current.value = ''
+          if (introVideoRef.current) introVideoRef.current.value = ''
+          if (projectMediaRef.current) projectMediaRef.current.value = ''
         }
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] border-gray-700 bg-gray-800 text-gray-100 flex flex-col">
@@ -779,6 +927,47 @@ export function CourseLibrary() {
               )}
             </div>
             <div className="space-y-2 rounded-lg border border-gray-700 bg-gray-900 p-4">
+              <Label className="text-gray-300">Intro Video</Label>
+              <p className="text-sm text-gray-500">
+                Upload a video file or paste a YouTube URL for the course introduction
+              </p>
+              {introVideoUrl && (
+                <div className="mt-2">
+                  {introVideoUrl.includes('youtube.com') || introVideoUrl.includes('youtu.be') ? (
+                    <div className="w-full max-w-md aspect-video bg-gray-800 rounded-lg flex items-center justify-center">
+                      <p className="text-gray-400 text-sm">YouTube: {introVideoUrl}</p>
+                    </div>
+                  ) : (
+                    <video 
+                      src={introVideoUrl} 
+                      className="w-full max-w-md aspect-video object-cover rounded-lg border border-gray-700"
+                      controls
+                    />
+                  )}
+                </div>
+              )}
+              <Input
+                placeholder="YouTube URL (e.g., https://youtube.com/watch?v=...)"
+                value={introVideoUrl}
+                onChange={(e) => setIntroVideoUrl(e.target.value)}
+                className="mt-2 border-gray-700 bg-gray-800 text-gray-100"
+              />
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <span>or</span>
+              </div>
+              <Input
+                ref={introVideoRef}
+                type="file"
+                accept="video/*"
+                onChange={handleIntroVideoChange}
+                disabled={uploadingIntroVideo}
+                className="border-gray-700 bg-gray-800 text-gray-100"
+              />
+              {uploadingIntroVideo && (
+                <p className="text-sm text-amber-500 mt-1">Uploading video...</p>
+              )}
+            </div>
+            <div className="space-y-2 rounded-lg border border-gray-700 bg-gray-900 p-4">
               <Label className="text-gray-300">Course Project</Label>
               <p className="text-sm text-gray-500">
                 Students will complete this project after finishing 75% of the course
@@ -798,12 +987,216 @@ export function CourseLibrary() {
               />
               <div className="mt-2">
                 <Label className="text-gray-300 text-sm">Project Image/Video</Label>
+                {projectMediaUrl && (
+                  <div className="mt-2 mb-2">
+                    {projectMediaUrl.includes('.mp4') || projectMediaUrl.includes('video') ? (
+                      <video 
+                        src={projectMediaUrl} 
+                        className="w-full max-w-md h-32 object-cover rounded-lg border border-gray-700"
+                        controls
+                      />
+                    ) : (
+                      <img 
+                        src={projectMediaUrl} 
+                        alt="Project media preview" 
+                        className="w-full max-w-md h-32 object-cover rounded-lg border border-gray-700"
+                      />
+                    )}
+                  </div>
+                )}
                 <Input
+                  ref={projectMediaRef}
                   type="file"
                   accept="image/*,video/*"
+                  onChange={handleProjectMediaChange}
+                  disabled={uploadingProjectMedia}
                   className="mt-1 border-gray-700 bg-gray-800 text-gray-100"
                 />
+                {uploadingProjectMedia && (
+                  <p className="text-sm text-amber-500 mt-1">Uploading file...</p>
+                )}
               </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div>
+                <Label className="text-gray-300">Duration (hours)</Label>
+                <Input
+                  ref={durationRef}
+                  type="number"
+                  min="0"
+                  defaultValue={editingCourse?.duration}
+                  placeholder="24"
+                  className="mt-2 border-gray-700 bg-gray-900 text-gray-100"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Number of Lessons</Label>
+                <Input
+                  ref={lessonsCountRef}
+                  type="number"
+                  min="0"
+                  defaultValue={editingCourse?.lessons}
+                  placeholder="32"
+                  className="mt-2 border-gray-700 bg-gray-900 text-gray-100"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Certificate</Label>
+                <Select value={hasCertificate ? "yes" : "no"} onValueChange={(val) => setHasCertificate(val === "yes")}>
+                  <SelectTrigger className="mt-2 border-gray-700 bg-gray-900 text-gray-100">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="border-gray-700 bg-gray-800">
+                    <SelectItem value="yes">Included</SelectItem>
+                    <SelectItem value="no">Not Included</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2 rounded-lg border border-gray-700 bg-gray-900 p-4">
+              <Label className="text-gray-300">What You'll Learn</Label>
+              <p className="text-sm text-gray-500">
+                Add key learning outcomes (one per line)
+              </p>
+              {whatYouWillLearn.map((item, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={item}
+                    onChange={(e) => {
+                      const newItems = [...whatYouWillLearn]
+                      newItems[index] = e.target.value
+                      setWhatYouWillLearn(newItems)
+                    }}
+                    placeholder="e.g., Master core concepts and advanced techniques"
+                    className="border-gray-700 bg-gray-800 text-gray-100"
+                  />
+                  {whatYouWillLearn.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setWhatYouWillLearn(whatYouWillLearn.filter((_, i) => i !== index))}
+                      className="border-gray-700 text-gray-400 hover:text-red-400"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setWhatYouWillLearn([...whatYouWillLearn, ''])}
+                className="mt-2 border-gray-700 text-gray-300"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Learning Point
+              </Button>
+            </div>
+            <div className="space-y-4 rounded-lg border border-gray-700 bg-gray-900 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-gray-300">Course Curriculum</Label>
+                  <p className="text-sm text-gray-500">
+                    Organize your course into sections with lectures
+                  </p>
+                </div>
+              </div>
+              {courseCurriculum.map((section, sectionIndex) => (
+                <div key={sectionIndex} className="space-y-2 rounded border border-gray-700 bg-gray-800 p-3">
+                  <div className="flex gap-2 items-start">
+                    <div className="flex-1">
+                      <Input
+                        value={section.section}
+                        onChange={(e) => {
+                          const newCurriculum = [...courseCurriculum]
+                          newCurriculum[sectionIndex].section = e.target.value
+                          setCourseCurriculum(newCurriculum)
+                        }}
+                        placeholder={`Section ${sectionIndex + 1}: e.g., Introduction to Fundamentals`}
+                        className="border-gray-700 bg-gray-900 text-gray-100"
+                      />
+                    </div>
+                    {courseCurriculum.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setCourseCurriculum(courseCurriculum.filter((_, i) => i !== sectionIndex))}
+                        className="border-gray-700 text-gray-400 hover:text-red-400"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="ml-4 space-y-2">
+                    {section.lectures.map((lecture, lectureIndex) => (
+                      <div key={lectureIndex} className="flex gap-2">
+                        <Input
+                          value={lecture.title}
+                          onChange={(e) => {
+                            const newCurriculum = [...courseCurriculum]
+                            newCurriculum[sectionIndex].lectures[lectureIndex].title = e.target.value
+                            setCourseCurriculum(newCurriculum)
+                          }}
+                          placeholder="Lecture title"
+                          className="flex-1 border-gray-700 bg-gray-900 text-gray-100 text-sm"
+                        />
+                        <Input
+                          value={lecture.duration}
+                          onChange={(e) => {
+                            const newCurriculum = [...courseCurriculum]
+                            newCurriculum[sectionIndex].lectures[lectureIndex].duration = e.target.value
+                            setCourseCurriculum(newCurriculum)
+                          }}
+                          placeholder="15m"
+                          className="w-20 border-gray-700 bg-gray-900 text-gray-100 text-sm"
+                        />
+                        {section.lectures.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              const newCurriculum = [...courseCurriculum]
+                              newCurriculum[sectionIndex].lectures = section.lectures.filter((_, i) => i !== lectureIndex)
+                              setCourseCurriculum(newCurriculum)
+                            }}
+                            className="border-gray-700 text-gray-400 hover:text-red-400 h-8 w-8"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newCurriculum = [...courseCurriculum]
+                        newCurriculum[sectionIndex].lectures.push({ title: '', duration: '' })
+                        setCourseCurriculum(newCurriculum)
+                      }}
+                      className="text-xs border-gray-700 text-gray-400"
+                    >
+                      <Plus className="mr-1 h-3 w-3" />
+                      Add Lecture
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setCourseCurriculum([...courseCurriculum, { section: '', lectures: [{ title: '', duration: '' }] }])}
+                className="border-gray-700 text-gray-300"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Section
+              </Button>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div>

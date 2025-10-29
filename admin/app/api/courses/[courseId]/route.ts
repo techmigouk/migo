@@ -4,15 +4,16 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    console.log('📖 Fetching course:', params.courseId);
+    const { courseId } = await params;
+    console.log('📖 Fetching course:', courseId);
     await db.connect();
-    const course = await CourseModel.findById(params.courseId);
+    const course = await CourseModel.findById(courseId);
     
     if (!course) {
-      console.log('❌ Course not found:', params.courseId);
+      console.log('❌ Course not found:', courseId);
       return NextResponse.json(
         { success: false, error: 'Course not found' },
         { status: 404 }
@@ -32,22 +33,23 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    console.log('📝 Updating course:', params.courseId);
+    const { courseId } = await params;
+    console.log('📝 Updating course:', courseId);
     await db.connect();
     const body = await request.json();
     console.log('Update data:', body);
     
     const course = await CourseModel.findByIdAndUpdate(
-      params.courseId,
+      courseId,
       body,
       { new: true, runValidators: true }
     );
     
     if (!course) {
-      console.log('❌ Course not found for update:', params.courseId);
+      console.log('❌ Course not found for update:', courseId);
       return NextResponse.json(
         { success: false, error: 'Course not found' },
         { status: 404 }
@@ -67,15 +69,16 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    console.log('🗑️ Deleting course:', params.courseId);
+    const { courseId } = await params;
+    console.log('🗑️ Deleting course:', courseId);
     await db.connect();
-    const course = await CourseModel.findByIdAndDelete(params.courseId);
+    const course = await CourseModel.findByIdAndDelete(courseId);
     
     if (!course) {
-      console.log('❌ Course not found for deletion:', params.courseId);
+      console.log('❌ Course not found for deletion:', courseId);
       return NextResponse.json(
         { success: false, error: 'Course not found' },
         { status: 404 }
