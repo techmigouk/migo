@@ -650,7 +650,11 @@ export function CourseLibrary() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="rounded-lg border border-gray-700 bg-gray-900 p-4">
                     <p className="text-sm text-gray-400">Instructor</p>
-                    <p className="mt-1 font-medium text-gray-100">{selectedCourse.instructor}</p>
+                    <p className="mt-1 font-medium text-gray-100">
+                      {typeof selectedCourse.instructor === 'string' 
+                        ? selectedCourse.instructor 
+                        : selectedCourse.instructor?.name || 'Unknown'}
+                    </p>
                   </div>
                   <div className="rounded-lg border border-gray-700 bg-gray-900 p-4">
                     <p className="text-sm text-gray-400">Category</p>
