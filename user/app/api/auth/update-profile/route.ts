@@ -10,6 +10,7 @@ export async function PUT(request: NextRequest) {
     // Get token from Authorization header
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('❌ No authorization header or invalid format');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -19,13 +20,17 @@ export async function PUT(request: NextRequest) {
     let decoded: any;
     try {
       decoded = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
+      console.log('✅ Token verified:', { userId: decoded.userId, email: decoded.email });
+    } catch (err: any) {
+      console.error('❌ Token verification failed:', err.message);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
     // Get update data
     const body = await request.json();
-    const { avatar, name, email } = body;
+    const { avatar, name, email, phone, learningGoal, notificationPrefs } = body;
+    
+    console.log('📝 Update data:', { avatar: avatar ? 'provided' : 'none', name, email, phone, learningGoal });
 
     // Connect to database
     await db.connect();
@@ -35,6 +40,11 @@ export async function PUT(request: NextRequest) {
     if (avatar) updateData.avatar = avatar;
     if (name) updateData.name = name;
     if (email) updateData.email = email;
+    if (phone) updateData.phone = phone;
+    if (learningGoal) updateData.learningGoal = learningGoal;
+    if (notificationPrefs) updateData.notificationPrefs = notificationPrefs;
+
+    console.log('🔄 Updating user:', decoded.userId);
 
     const user = await UserModel.findByIdAndUpdate(
       decoded.userId,
@@ -43,8 +53,11 @@ export async function PUT(request: NextRequest) {
     ).select('-password');
 
     if (!user) {
+      console.error('❌ User not found:', decoded.userId);
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    console.log('✅ User updated successfully');
 
     return NextResponse.json({
       success: true,
@@ -58,7 +71,7 @@ export async function PUT(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Update profile error:', error);
+    console.error('❌ Update profile error:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to update profile' },
       { status: 500 }

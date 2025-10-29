@@ -4749,7 +4749,7 @@ export default function UserDashboard() {
         console.log("Sending update data:", updateData)
 
         // Call API to update user profile
-        const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/auth/me', {
+        const response = await fetch('/api/auth/update-profile', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
