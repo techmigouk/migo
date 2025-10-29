@@ -619,16 +619,8 @@ export default function UserDashboard() {
             })
             
             // Check if profile is complete - prioritize the database field
-            const isComplete = userData.profileCompleted === true || !!(
-              userData.name &&
-              userData.avatar &&
-              userData.phone &&
-              userData.bio &&
-              userData.country &&
-              userData.city &&
-              userData.dateOfBirth &&
-              userData.learningGoal
-            )
+            // If profileCompleted is explicitly set to true, trust it
+            const isComplete = userData.profileCompleted === true
             
             setProfileComplete(isComplete)
             if (!isComplete) {
@@ -684,16 +676,8 @@ export default function UserDashboard() {
               })
               
               // Check if profile is complete - prioritize the database field
-              const isComplete = userData.profileCompleted === true || !!(
-                userData.name &&
-                userData.avatar &&
-                userData.phone &&
-                userData.bio &&
-                userData.country &&
-                userData.city &&
-                userData.dateOfBirth &&
-                userData.learningGoal
-              )
+              // If profileCompleted is explicitly set to true, trust it
+              const isComplete = userData.profileCompleted === true
               
               setProfileComplete(isComplete)
               if (!isComplete) {
