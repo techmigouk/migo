@@ -961,6 +961,19 @@ export default function LessonPage() {
                         Completed
                       </Badge>
                     )}
+                    {lesson.quiz && lesson.quiz.questions.length > 0 && (
+                      <Badge 
+                        variant="outline" 
+                        className={`transition-all duration-300 animate-in fade-in slide-in-from-left-2 duration-500 delay-200 ${
+                          quizPassed
+                            ? 'bg-green-500/20 text-green-400 border-green-500/40 shadow-lg shadow-green-500/20'
+                            : 'bg-amber-500/15 text-amber-400 border-amber-500/40 shadow-lg shadow-amber-500/20'
+                        }`}
+                      >
+                        <Award className="mr-1.5 h-3.5 w-3.5" />
+                        {quizPassed ? `Quiz: ${quizScore}%` : 'Quiz Required'}
+                      </Badge>
+                    )}
                   </div>
                   <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-amber-50 to-white bg-clip-text text-transparent mb-3 leading-tight animate-in fade-in slide-in-from-bottom-2 duration-700 delay-200 group-hover:scale-[1.02] transition-transform">{lesson.title}</h1>
                   <p className="text-gray-300 text-lg leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-700 delay-300">{lesson.description}</p>
@@ -1024,19 +1037,38 @@ export default function LessonPage() {
                   />
                 </Card>
 
-                {!isCompleted && !lesson.quiz && (
-                  <Button 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log('Button clicked!');
-                      handleMarkComplete();
-                    }}
-                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-7 text-lg shadow-2xl shadow-green-500/30 hover:shadow-green-500/50 hover:scale-[1.02] transition-all duration-300 rounded-xl group"
-                  >
-                    <CheckCircle className="mr-2 h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
-                    Mark as Complete
-                  </Button>
+                {!isCompleted && (
+                  <div className="space-y-4">
+                    {/* Show quiz requirement message if quiz not passed yet */}
+                    {lesson.quiz && lesson.quiz.questions.length > 0 && (
+                      <>
+                        {!quizPassed && (
+                          <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+                            <p className="text-amber-400 text-sm font-medium flex items-center gap-2">
+                              <Award className="h-5 w-5" />
+                              Complete the quiz tab with a score of {lesson.quiz.passingScore || 70}% or higher to mark this lesson as complete.
+                            </p>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    
+                    {/* Mark Complete button - show if no quiz OR quiz passed */}
+                    {(!lesson.quiz || (lesson.quiz && quizPassed)) && (
+                      <Button 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log('Mark Complete button clicked!');
+                          handleMarkComplete();
+                        }}
+                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-7 text-lg shadow-2xl shadow-green-500/30 hover:shadow-green-500/50 hover:scale-[1.02] transition-all duration-300 rounded-xl group"
+                      >
+                        <CheckCircle className="mr-2 h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+                        Mark as Complete
+                      </Button>
+                    )}
+                  </div>
                 )}
               </TabsContent>
 
@@ -1444,11 +1476,16 @@ export default function LessonPage() {
                         // If target lesson is locked (due to previous lesson requirements), show modal
                         if (locked && isMovingForward) {
                           console.log('🔒 Target lesson is locked');
-                          handleAttemptNextLesson(l);
+                          // Show the quiz lock modal for the previous lesson that needs completion
+                          setAttemptingNextLesson(l);
+                          setShowQuizLockModal(true);
+                          return;
                         } else if (!locked) {
                           console.log('✅ Navigating to lesson');
                           // Safe to navigate (either going back or going to unlocked lesson)
                           navigateToLesson(l._id);
+                        } else {
+                          console.log('⚠️ Unexpected state: locked but not moving forward');
                         }
                       }}
                       className={`relative w-full text-left p-3 rounded-lg border transition-all duration-500 group overflow-hidden animate-in fade-in slide-in-from-right-2 ${
