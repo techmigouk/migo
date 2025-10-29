@@ -4674,29 +4674,47 @@ export default function UserDashboard() {
               return
             }
 
-            // Call API to update avatar
-            const response = await fetch((process.env.NODE_ENV === 'production' ? 'https://techmigo.co.uk' : 'http://localhost:3000') + '/api/auth/me', {
+            // Call API to update avatar using FormData
+            const formData = new FormData()
+            formData.append('file', file)
+            
+            const response = await fetch('/api/upload', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+              body: formData
+            })
+
+            if (!response.ok) {
+              const errorData = await response.json()
+              throw new Error(errorData.error || 'Failed to upload avatar')
+            }
+
+            const data = await response.json()
+            
+            if (!data.success) {
+              throw new Error('Upload failed')
+            }
+            
+            // Update user profile with the new avatar URL
+            const updateResponse = await fetch('/api/auth/update-profile', {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
               },
-              body: JSON.stringify({ avatar: base64String })
+              body: JSON.stringify({ avatar: data.url })
             })
-
-            if (!response.ok) {
-              throw new Error('Failed to upload avatar')
+            
+            if (updateResponse.ok) {
+              const userData = await updateResponse.json()
+              localStorage.setItem("user", JSON.stringify(userData.user))
+              setUserStats({...userStats, userAvatarUrl: data.url})
+              showToast('success', 'Profile photo updated successfully!', <CheckCircle size={16} />)
             }
-
-            const data = await response.json()
             
-            // Update localStorage with the returned user data
-            localStorage.setItem("user", JSON.stringify(data.user))
-            
-            // Update userStats state
-            setUserStats({...userStats, userAvatarUrl: base64String})
-            
-            console.log("Avatar uploaded successfully")
+            console.log("Avatar uploaded successfully:", data.url)
           } catch (error) {
             console.error("Error uploading avatar:", error)
             showToast('error', 'Error uploading photo. Please try again.', <XCircle size={16} />)
