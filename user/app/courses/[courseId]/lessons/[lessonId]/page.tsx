@@ -276,8 +276,33 @@ export default function LessonPage() {
     }
   };
 
-  const handleVideoEnd = () => {
+  const handleVideoEnd = async () => {
     setVideoCompleted(true);
+    
+    // Automatically mark lesson as complete when video ends (only if no quiz)
+    if (!lesson?.quiz && session?.user && lessonId && !isCompleted) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/progress/${courseId}`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            completedLessonId: lessonId,
+          }),
+        });
+
+        if (response.ok) {
+          console.log('Lesson automatically marked complete after video ended');
+          // Refresh progress
+          await fetchLessonData();
+        }
+      } catch (error) {
+        console.error('Failed to auto-complete lesson:', error);
+      }
+    }
   };
 
   // Handle play button overlay visibility
@@ -346,32 +371,42 @@ export default function LessonPage() {
     setQuizScore(score);
     setQuizSubmitted(true);
 
-    // Save quiz score
+    // Save quiz score and mark lesson complete if passed
     if (session?.user) {
       try {
         const token = localStorage.getItem('token');
-        await fetch(`/api/progress/${courseId}`, {
+        const passingScore = lesson.quiz.passingScore || 70;
+        
+        const updateData: any = {
+          lessonId,
+          quizScore: score,
+        };
+        
+        // If quiz passed, also mark lesson as complete
+        if (score >= passingScore) {
+          updateData.completedLessonId = lessonId;
+        }
+        
+        const response = await fetch(`/api/progress/${courseId}`, {
           method: 'PUT',
           headers: { 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({
-            lessonId,
-            quizScore: score,
-          }),
+          body: JSON.stringify(updateData),
         });
         
-        // Refresh progress to update quiz scores
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Failed to save quiz score:', errorData);
+          return;
+        }
+        
+        // Refresh progress to update quiz scores and completion status
         await fetchLessonData();
       } catch (error) {
         console.error('Failed to save quiz score:', error);
       }
-    }
-
-    // If passed, mark as completed
-    if (score >= (lesson.quiz.passingScore || 70)) {
-      handleMarkComplete();
     }
   };
 
@@ -385,20 +420,26 @@ export default function LessonPage() {
     try {
       const token = localStorage.getItem('token');
       console.log('Sending mark complete request...');
-      await fetch(`/api/progress/${courseId}`, {
+      const response = await fetch(`/api/progress/${courseId}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          completedLessons: [lessonId],
+          completedLessonId: lessonId,
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Failed to mark lesson complete:', errorData);
+        return;
+      }
+
       console.log('Lesson marked complete, refreshing progress...');
       // Refresh progress
-      fetchLessonData();
+      await fetchLessonData();
     } catch (error) {
       console.error('Failed to mark lesson complete:', error);
     }
@@ -488,21 +529,36 @@ export default function LessonPage() {
     setQuizScore(score);
     setQuizSubmitted(true);
 
-    // Save quiz score
+    // Save quiz score and mark lesson complete if passed
     if (session?.user) {
       try {
         const token = localStorage.getItem('token');
-        await fetch(`/api/progress/${courseId}`, {
+        const passingScore = lesson.quiz.passingScore || 75;
+        
+        const updateData: any = {
+          lessonId,
+          quizScore: score,
+        };
+        
+        // If quiz passed, also mark lesson as complete
+        if (score >= passingScore) {
+          updateData.completedLessonId = lessonId;
+        }
+        
+        const response = await fetch(`/api/progress/${courseId}`, {
           method: 'PUT',
           headers: { 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ 
-            lessonId,
-            quizScore: score,
-          }),
+          body: JSON.stringify(updateData),
         });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Failed to save quiz score:', errorData);
+          return;
+        }
         
         // Refresh progress
         await fetchLessonData();
